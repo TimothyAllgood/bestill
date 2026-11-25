@@ -75,17 +75,19 @@ function bind(channel,handler){ipcMain.handle(channel,(event,...args)=>{
   if(!win||event.sender!==win.webContents||event.senderFrame!==win.webContents.mainFrame)throw new Error('Untrusted sender');
   return handler(...args);
 });}
+function getBriefing(){
+  const today=C.localDate();
+  if(!config.news||config.lastBriefing===today)return Promise.resolve({skipped:true});
+  if(!briefingPromise||briefingDate!==today){briefingDate=today;briefingPromise=buildBriefing({...config}).catch(()=>({error:true}));}
+  return briefingPromise;
+}
+function newsPreferences(c){return JSON.stringify([c.news,c.ai,c.model,c.region,c.feeds]);}
 function register(){
-  bind('session',()=>({ritual,config:{...config,track:!!config.track},today:C.localDate(),feeds:C.FEEDS}));
+  bind('session',()=>{void getBriefing();return {ritual,config:{...config,track:!!config.track},today:C.localDate(),feeds:C.FEEDS};});
   bind('scripture',scripture);
   bind('models',models);
-  bind('settings',async(input)=>{config=C.settings(input,config);await persist();return true;});
-  bind('briefing',()=>{
-    const today=C.localDate();
-    if(!config.news||config.lastBriefing===today)return {skipped:true};
-    if(!briefingPromise||briefingDate!==today){briefingDate=today;briefingPromise=buildBriefing({...config}).catch(()=>({error:true}));}
-    return briefingPromise;
-  });
+  bind('settings',async(input)=>{const before=newsPreferences(config);config=C.settings(input,config);await persist();if(before!==newsPreferences(config)){briefingPromise=null;briefingDate=null;void getBriefing();}return true;});
+  bind('briefing',getBriefing);
   bind('briefing-seen',async()=>{if(briefingDate===C.localDate()&&briefingPromise){config.lastBriefing=briefingDate;await persist();}});
   bind('choose-track',async()=>{
     const r=await dialog.showOpenDialog(win,{properties:['openFile'],filters:[{name:'Audio',extensions:['mp3','wav','ogg','m4a','flac']}]});
