@@ -24,7 +24,7 @@ async function scripture(ref){
   if(!key)return {link,text:null,notice:'Read the ESV at Crossway, or configure your free personal API token in .env.'};
   try{
     const url=new URL('https://api.esv.org/v3/passage/text/');
-    for(const [k,v] of Object.entries({q:ref,'include-passage-references':'false','include-verse-numbers':'false','include-footnotes':'false','include-headings':'false','include-short-copyright':'true','include-copyright':'true'}))url.searchParams.set(k,v);
+    for(const [k,v] of Object.entries({q:ref,'include-passage-references':'false','include-verse-numbers':'false','include-footnotes':'false','include-headings':'false','include-short-copyright':'true','include-copyright':'false'}))url.searchParams.set(k,v);
     const data=await (await request(url,{headers:{Authorization:'Token '+key}})).json();
     const text=Array.isArray(data.passages)?data.passages.join('\n').trim():'';
     if(!text)return {link,text:null,notice:'Passage unavailable. Open the original at Crossway.'};
