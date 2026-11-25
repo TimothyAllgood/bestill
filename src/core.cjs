@@ -23,7 +23,7 @@ function safeUrl(value){try{const u=new URL(value);return u.protocol==='https:'&
 function clean(value,max=500){return typeof value==='string'?value.replace(/[\u0000-\u001f\u007f]/g,' ').trim().slice(0,max):'';}
 function settings(input={},old=DEFAULTS){
   return {...old,sourceVersion:2,fullscreen:input.fullscreen!==false,name:clean(input.name,60),seconds:[15,30,45,60].includes(Number(input.seconds))?Number(input.seconds):30,
-    audio:['off','ambient','file'].includes(input.audio)?input.audio:'off',volume:Math.max(0,Math.min(100,Number(input.volume)||0)),
+    audio:['off','ambient','file','hymns','amazing-grace','doxology','abide','morning-light','quiet-waters'].includes(input.audio)?input.audio:'off',volume:Math.max(0,Math.min(100,Number(input.volume)||0)),
     model:clean(input.model,200),news:input.news===true,ai:input.ai===true,
     region:/^[A-Z]{2}[CZ]\d{3}$/.test(input.region||'')?input.region:'',
     feeds:Array.isArray(input.feeds)?FEEDS.filter(f=>input.feeds.includes(f.id)).map(f=>f.id):DEFAULTS.feeds};
