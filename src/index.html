@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; media-src 'self' blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><title>Be Still</title><link rel="stylesheet" href="style.css"></head>
-<body><header><span class="wordmark">be still<span class="period">.</span></span><nav><button id="sound" class="quiet" aria-label="Toggle sound" aria-pressed="false">Sound off</button><button id="settings" class="quiet">Settings</button></nav></header>
+<body><header><span class="wordmark">be still<span class="period">.</span></span><nav><button id="sound" class="quiet" aria-label="Toggle sound" aria-pressed="false">Sound off</button><button id="settings" class="quiet">Settings</button><button id="fullscreen" class="quiet" title="F11 · Esc exits full screen">Full screen</button><button id="quit" class="quiet close-app" title="Close Be Still" aria-label="Close Be Still">Close ×</button></nav></header>
 <main id="stage" tabindex="-1" aria-live="polite"></main><footer><span id="progress"></span><button id="back" class="quiet" hidden>Back</button></footer>
 <dialog id="preferences"><form id="settings-form"><div class="settings-title"><h2>Make it yours.</h2><button type="button" class="quiet" id="close-settings">Close</button></div>
-<label>Your name (optional)<input name="name" maxlength="60" autocomplete="off"></label>
+<label class="check"><input name="fullscreen" type="checkbox">Open full screen by default</label><label>ESV API key (optional)<input name="esvKey" type="password" maxlength="512" autocomplete="off" placeholder="Enter a new key to save securely"></label><p id="esv-status" class="muted"></p><button type="button" id="get-esv" class="quiet">Get a free ESV key ↗</button><label>Your name (optional)<input name="name" maxlength="60" autocomplete="off"></label>
 <label>Opening duration<select name="seconds"><option>15</option><option>30</option><option>45</option><option>60</option></select></label>
 <label>Sound<select name="audio"><option value="off">Silent</option><option value="ambient">Gentle instrumental ambient pad</option><option value="file">My own instrumental worship track</option></select></label>
 <button type="button" id="pick-track">Choose local audio file</button><p class="muted" id="track-status"></p>
@@ -13,6 +13,6 @@
 <label>Ollama model<select name="model"><option value="">Automatic (installed model)</option></select></label><p id="model-status" class="muted"></p>
 <label>Optional NWS county or forecast zone code<input name="region" maxlength="6" placeholder="e.g. XXZ001" pattern="[A-Z]{2}[CZ][0-9]{3}"></label><p class="muted">US only. Use your official NWS zone; leave blank to disable. Not an emergency alert service.</p>
 <fieldset><legend>News sources</legend><div id="feeds"></div></fieldset>
-<p class="muted">Settings and the last briefing date stay on this device. Scripture, prayers and news are not saved. ESV token is configured in the local .env file.</p>
+<p class="muted">Settings and the last briefing date stay on this device. Scripture, prayers and news are not saved. An ESV token can be saved using your operating system’s secure storage.</p>
 <button class="primary" type="submit">Save preferences</button><p id="settings-error" role="status"></p></form></dialog>
 <script src="renderer.js"></script></body></html>

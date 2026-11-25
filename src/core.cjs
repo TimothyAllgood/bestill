@@ -7,14 +7,22 @@ const FEEDS=[
   {id:'npr',name:'NPR News',url:'https://feeds.npr.org/1001/rss.xml'},
   {id:'bls',name:'Bureau of Labor Statistics',url:'https://www.bls.gov/feed/bls_latest.rss'},
   {id:'nasa',name:'NASA',url:'https://www.nasa.gov/news-release/feed/'},
-  {id:'nih',name:'National Institutes of Health',url:'https://www.nih.gov/news-releases/feed.xml'}
+  {id:'nih',name:'National Institutes of Health',url:'https://www.nih.gov/news-releases/feed.xml'},
+  {id:'pbs',name:'PBS News',url:'https://www.pbs.org/newshour/feeds/rss/headlines'},
+  {id:'dol',name:'US Department of Labor',url:'https://www.dol.gov/rss/releases.xml'},
+  {id:'fed',name:'Federal Reserve',url:'https://www.federalreserve.gov/feeds/press_all.xml'},
+  {id:'ars',name:'Ars Technica',url:'https://feeds.arstechnica.com/arstechnica/index'},
+  {id:'gnn',name:'Good News Network',url:'https://www.goodnewsnetwork.org/custom-feeds/news-images.php'},
+  {id:'guard-science',name:'Guardian Science',url:'https://www.theguardian.com/science/rss'},
+  {id:'guard-world',name:'Guardian World',url:'https://www.theguardian.com/world/rss'},
+  {id:'bbc-us',name:'BBC US & Canada',url:'https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml'}
 ];
-const DEFAULTS={name:'',seconds:30,audio:'off',volume:20,model:'',news:true,ai:true,region:'',feeds:FEEDS.map(f=>f.id),lastBriefing:'',track:''};
+const DEFAULTS={sourceVersion:2,fullscreen:true,name:'',seconds:30,audio:'off',volume:20,model:'',news:true,ai:true,region:'',feeds:FEEDS.map(f=>f.id),lastBriefing:'',track:''};
 function localDate(d=new Date()){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');}
 function safeUrl(value){try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password?u.href:null;}catch{return null;}}
 function clean(value,max=500){return typeof value==='string'?value.replace(/[\u0000-\u001f\u007f]/g,' ').trim().slice(0,max):'';}
 function settings(input={},old=DEFAULTS){
-  return {...old,name:clean(input.name,60),seconds:[15,30,45,60].includes(Number(input.seconds))?Number(input.seconds):30,
+  return {...old,sourceVersion:2,fullscreen:input.fullscreen!==false,name:clean(input.name,60),seconds:[15,30,45,60].includes(Number(input.seconds))?Number(input.seconds):30,
     audio:['off','ambient','file'].includes(input.audio)?input.audio:'off',volume:Math.max(0,Math.min(100,Number(input.volume)||0)),
     model:clean(input.model,200),news:input.news===true,ai:input.ai===true,
     region:/^[A-Z]{2}[CZ]\d{3}$/.test(input.region||'')?input.region:'',
@@ -25,7 +33,7 @@ function normalizeItems(feed,items,now=Date.now()){
     const title=clean(item.title),link=safeUrl(item.link),date=Date.parse(item.isoDate||item.pubDate||'');
     if(!title||!link||!Number.isFinite(date)||date>now+300000||date<now-72*3600000)return [];
     return [{title,link,date:new Date(date).toISOString(),source:feed.name,sourceId:feed.id}];
-  }).slice(0,14);
+  }).sort((a,b)=>Date.parse(b.date)-Date.parse(a.date)).slice(0,14);
 }
 function combineItems(groups){
   const seen=new Set(),out=[];
@@ -33,7 +41,7 @@ function combineItems(groups){
   for(let i=0;i<14;i++)for(const group of groups){const a=group[i];if(!a)continue;
     const key=a.title.toLowerCase().replace(/[^a-z0-9]/g,'');
     if(seen.has(key))continue;seen.add(key);out.push({...a,id:'n'+out.length});}
-  return out.slice(0,64);
+  return out.slice(0,96);
 }
 function applySelection(items,selection){
   const ids=new Map(items.map(a=>[a.id,a])),used=new Set();
@@ -43,6 +51,18 @@ function applySelection(items,selection){
   }).slice(0,max);}
   const attention=pick(selection?.attention,3),good=pick(selection?.good,5);
   return {good,attention};
+}
+function rankScored(items,rows){
+  const byId=new Map(items.map(i=>[i.id,i])),seen=new Set(),ranked=[];
+  for(const row of Array.isArray(rows)?rows:[]){
+    if(!row||!byId.has(row.id)||seen.has(row.id)||!['positive','negative','neutral','unclear'].includes(row.tone))continue;
+    if(![row.relevance,row.impact].every(x=>Number.isInteger(x)&&x>=0&&x<=3))continue;
+    seen.add(row.id);ranked.push({...byId.get(row.id),tone:row.tone,relevance:row.relevance,impact:row.impact,score:row.relevance*2+row.impact});
+  }
+  ranked.sort((a,b)=>b.score-a.score||Date.parse(b.date)-Date.parse(a.date)||a.id.localeCompare(b.id));
+  const good=ranked.filter(x=>x.tone==='positive'&&x.relevance>=1),bad=ranked.filter(x=>x.tone==='negative'),attention=bad.filter(x=>x.relevance>=2&&x.impact>=2),other=ranked.filter(x=>x.tone==='neutral'&&x.relevance>=2);
+  function diverse(list,max){const sources=new Map(),out=[];for(const item of list){const family=item.sourceId.startsWith('bbc-')?'bbc':item.sourceId.startsWith('guard-')?'guardian':item.sourceId;const n=sources.get(family)||0;if(n>=2)continue;sources.set(family,n+1);out.push(item);if(out.length===max)break;}return out;}
+  return {good:diverse(good,5),attention:diverse(attention,3),other:diverse(other,3),ranked,counts:{positive:ranked.filter(x=>x.tone==='positive').length,negative:bad.length,neutral:ranked.filter(x=>x.tone==='neutral').length,unclear:ranked.filter(x=>x.tone==='unclear').length,unclassified:items.length-ranked.length}};
 }
 function fallback(items){
   // No AI means no claim of positive sentiment or threat assessment.
@@ -55,4 +75,4 @@ function alertItems(features){
 }
 function esvLink(ref){return 'https://www.esv.org/'+encodeURIComponent(ref.replace(/ /g,'+')).replace(/%2B/g,'+')+'/';}
 function allowedPassage(ref){return passages.some(p=>p[0]===ref||p[1]===ref||p[3].includes(ref));}
-module.exports={FEEDS,DEFAULTS,localDate,safeUrl,clean,settings,normalizeItems,combineItems,applySelection,fallback,alertItems,esvLink,allowedPassage,makeRitual};
+module.exports={FEEDS,DEFAULTS,localDate,safeUrl,clean,settings,normalizeItems,combineItems,applySelection,rankScored,fallback,alertItems,esvLink,allowedPassage,makeRitual};

@@ -1,7 +1,10 @@
-name: Checks
+name: Checks and Windows preview
 on:
   push:
   pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -12,3 +15,44 @@ jobs:
           node-version: '22'
       - run: npm run check
       - run: npm test
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Resolve dependencies
+        run: npm install --no-audit --no-fund
+      - name: Check for high and critical production dependency advisories
+        run: npm audit --omit=dev --audit-level=high
+      - run: npm run check
+      - run: npm test
+      - name: Build unsigned portable Windows x64 executable
+        run: npm run build:win
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - name: Smoke test packaged app
+        shell: pwsh
+        run: |
+          $p = Start-Process -FilePath "dist/win-unpacked/Be Still.exe" -ArgumentList "--smoke-test" -PassThru
+          if (-not $p.WaitForExit(45000)) { Stop-Process -Id $p.Id -Force; throw "App did not complete smoke test" }
+          if ($p.ExitCode -ne 0) { throw "Smoke test exited with $($p.ExitCode)" }
+      - name: Record executable SHA256 and signature
+        shell: pwsh
+        run: |
+          $exe = Get-Item "dist/BeStill-0.2.0-win-x64.exe"
+          $hash = Get-FileHash $exe.FullName -Algorithm SHA256
+          "$($hash.Hash)  $($exe.Name)" | Set-Content "dist/SHA256SUMS.txt"
+          Get-AuthenticodeSignature $exe.FullName | Format-List | Out-String | Set-Content "dist/signature.txt"
+          Copy-Item package-lock.json dist/build-package-lock.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BeStill-Windows-x64-preview
+          path: |
+            dist/BeStill-0.2.0-win-x64.exe
+            dist/SHA256SUMS.txt
+            dist/signature.txt
+            dist/build-package-lock.json
+          if-no-files-found: error

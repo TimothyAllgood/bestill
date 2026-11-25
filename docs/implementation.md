@@ -18,3 +18,11 @@ Settings JSON in Electron userData includes optional display name, source choice
 - No installer, automatic startup, or signed release yet. No automatic daily notification.
 - Random choices can repeat by design since there is no session history. No journaling or AI-generated prayer.
 - Check ESV attribution, actual key, connection failures, sound toggle, local file playback, window resizing, keyboard navigation, reduced motion and daily completion on a real machine.
+
+## v0.2 — fullscreen, study, briefing and packaging
+
+- Native fullscreen with no kiosk lock, Esc/F11, persistent Close control, windowed launch preference. External links leave fullscreen. Scrollable main content keeps controls visible.
+- Optional study uses four compact choices: Context (ESV), Explanation (human-authored BibleRef link), Related verses, Reflect. No model sees Scripture or generates theology. Commentary is still external and individual links need review.
+- 16 default feeds; migrate old preferences while respecting existing disabled feeds. Recent headline IDs classified positive/negative/neutral/unclear with relevance and impact (0–3 each); score = 2×relevance + impact. Invalid and missing rows are not silently classified. Default negative selection requires relevance and impact >=2; source caps reduce duplication, not proof of corroboration. More headlines are optional. Weather remains model-independent. Headline classification is not fact-checking; source access, AI ranking quality and publisher terms still need live review. Batches may take several minutes on slower models.
+- Portable unsigned Windows x64 preview via electron-builder; exact package versions pinned but no committed transitive lock yet. CI performs syntax/unit checks, production dependency advisory gate, packaged renderer startup smoke test and records SHA256/signature. Not a malware certification; actual portable wrapper launch, Defender scan, UI behavior, audio, ESV and local model still need device verification.
+- Renderer sandbox, context isolation, no Node integration, permission denial, explicit link allowlist, bounded feed parsing and no XML DTD/entities. ESV token can be encrypted with OS-backed safeStorage; no secrets or settings included in package. Smoke uses temporary isolated settings and disables news, models and API key. No startup task or automatic updates.
