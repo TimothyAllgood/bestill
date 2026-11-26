@@ -1,0 +1,45 @@
+{
+  "name": "bestill",
+  "version": "0.13.0",
+  "private": true,
+  "description": "A quiet local-first Christian morning ritual",
+  "main": "src/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test",
+    "check": "node --check src/main.cjs && node --check src/preload.cjs && node --check src/renderer.js && node --check src/core.cjs && node --check src/study.cjs && node --check src/music.js && node --check src/study/resources.cjs && node --check src/content.cjs && node --check src/bible.cjs && node --check src/inspiration.cjs && node --check src/atmosphere.cjs && node --check src/ritual-variants.cjs && node --check src/soundscapes.js && node --check src/recordings.cjs && node --check src/audio-choice.js && node --check src/audio-level.js && node --check src/reader-policy.cjs && node --check src/scripture-format.cjs && node --check src/offline-bible.cjs && node --check scripts/prepare-bible.cjs",
+    "build:win": "npm run prepare:bible && electron-builder --win portable --x64 --publish never",
+    "prepare:bible": "node scripts/prepare-bible.cjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "rss-parser": "3.13.0"
+  },
+  "devDependencies": {
+    "electron": "45.5.0",
+    "electron-builder": "26.18.0"
+  },
+  "productName": "Be Still",
+  "build": {
+    "appId": "com.bestill.desktop",
+    "productName": "Be Still",
+    "asar": true,
+    "files": [
+      "src/**/*",
+      "package.json",
+      "!**/.env*"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        "portable"
+      ],
+      "artifactName": "BeStill-${version}-win-x64.exe"
+    },
+    "publish": null
+  }
+}

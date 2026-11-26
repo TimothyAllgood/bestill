@@ -1,0 +1,2 @@
+const test=require('node:test'),assert=require('node:assert/strict'),{atmosphere,seasonalPalette}=require('../src/atmosphere.cjs'),C=require('../src/core.cjs');
+test('optional seasonal atmosphere keeps same calm palette',()=>{assert.equal(atmosphere(()=>0,'seasonal',new Date(2026,10,1)),'ember');assert.equal(atmosphere(()=>0,'seasonal',new Date(2026,0,1)),'night');assert.equal(C.settings({...C.DEFAULTS,visualMode:'seasonal'}).visualMode,'seasonal');assert.ok(seasonalPalette(new Date(2026,5,1)).includes('woodland'));});
