@@ -1,12 +1,12 @@
 const api=window.beStill,stage=document.querySelector('#stage'),progress=document.querySelector('#progress'),back=document.querySelector('#back'),sound=document.querySelector('#sound'),dialog=document.querySelector('#preferences'),form=document.querySelector('#settings-form');
-let selectedHymn=null,previewing=false;
+let selectedHymn=null,previewing=false,newsPoll=null;
 let session,config,step=0,timer,transition=0,versePromise,briefingPromise,briefingShown=false,ctx,padGain,oscillators=[],audio,objectUrl,soundOn=false,soundToken=0;
 const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
 function btn(text,fn,cls=''){const b=el('button',cls,text);b.type='button';b.addEventListener('click',fn);return b;}
 function actions(...buttons){const a=el('div','actions');a.append(...buttons);return a;}
 function external(label,url,cls=''){return btn(label,()=>api.open(url).catch(()=>{}),cls);}
 function scene(label,title,sub){const s=el('section','scene');if(label)s.append(el('p','eyebrow',label));if(title)s.append(el('h1','',title));if(sub)s.append(el('p','sub',sub));return s;}
-function show(s){stage.replaceChildren(s);stage.focus({preventScroll:true});stage.scrollIntoView({block:'start'});}
+function show(s){clearTimeout(newsPoll);stage.replaceChildren(s);stage.focus({preventScroll:true});stage.scrollIntoView({block:'start'});}
 function dots(){const d=el('div','dots');d.setAttribute('aria-label','Step '+(step+1)+' of 6');for(let i=0;i<6;i++)d.append(el('span','dot'+(i===step?' active':'')));progress.replaceChildren(d);back.hidden=step===0;}
 function cancelTimer(){clearTimeout(timer);}
 function schedule(){cancelTimer();if(step===0&&!dialog.open)timer=setTimeout(()=>go(1),config.seconds*1000);}
@@ -17,9 +17,9 @@ function render(){
   if(step===0){const s=scene('',r.arrival,'Breathe gently, at your own pace.');s.prepend(el('p','greeting',greeting()));const circle=el('div','breath');circle.setAttribute('aria-hidden','true');s.append(circle,actions(btn('Continue when ready',()=>go(1),'quiet')));show(s);schedule();}
   if(step===1){const s=scene('Scripture',r.reference,'');const text=el('div','verse','Opening the passage…'),credit=el('p','credit');s.append(text,credit);const a=actions(btn('Study this passage',()=>study()),btn('Continue',()=>go(2),'primary'));s.append(a);show(s);versePromise.then(v=>{if(!s.isConnected)return;text.textContent=v.text||'Read today’s passage in the ESV.';credit.textContent=v.notice;a.prepend(external('Read on ESV.org',v.link));}).catch(()=>{text.textContent='Scripture is currently unavailable.';});}
   if(step===2){const s=scene('A moment with God',r.prayer,'Bring it before God in your own words. Take as much time as you need.');s.append(actions(btn('Continue when ready',()=>go(3),'primary')));show(s);}
-  if(step===3){const s=scene('Gratitude',r.gratitude,'Stay here for a moment. There is nothing to write or submit.');s.append(actions(btn('Continue when ready',()=>go(config.news&&!briefingShown?4:5),'primary')));show(s);}
+  if(step===3){const s=scene('Gratitude',r.gratitude,'Stay here for a moment. There is nothing to write or submit.');s.append(actions(btn('Continue when ready',()=>go(config.news?4:5),'primary')));show(s);}
   if(step===4)renderNews();
-  if(step===5){const s=scene('','Go live today.',r.ending);s.append(actions(btn('Begin my day',()=>{stopSound();api.finish();},'primary')));show(s);}
+  if(step===5){const s=scene('','Go live today.',r.ending);s.append(actions(...(config.news?[btn('View briefing',()=>go(4),'quiet')]:[]),btn('Begin my day',()=>{stopSound();api.finish();},'primary')));show(s);}
 }
 function study(){
   const r=session.ritual,s=scene('Read a little deeper',r.reference,'Scripture first. Human-written guidance, only when you want it.');
@@ -38,37 +38,37 @@ function study(){
 }
 function article(a){const b=external(a.title+' ↗',a.link,'article');b.append(el('span','meta',a.source+' · '+new Date(a.date).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'})+(Number.isInteger(a.relevance)?' · '+['Low','Some','Relevant','Highly relevant'][a.relevance]:'')));return b;}
 function section(title,items,empty){const d=el('div','section');d.append(el('h2','',title));if(!items.length)d.append(el('p','sub',empty));else for(const item of items)d.append(article(item));return d;}
-function renderNews(){
-  const s=scene('The world this morning','A little perspective.','A short briefing, not a complete picture of the world.');s.classList.add('news');
-  const content=el('div','section','Checking sources and sorting headlines locally. You can skip this whenever you like.');s.append(content,actions(btn('Skip briefing',()=>go(5),'quiet')));show(s);
-  briefingPromise??=api.briefing();briefingPromise.then(async data=>{
-    if(!s.isConnected)return;content.remove();s.lastElementChild.remove();
-    if(data.skipped){briefingShown=true;s.append(el('p','sub','The daily briefing has already been shown or is disabled.'));}
-    else if(data.error){s.append(el('p','sub','Briefing unavailable. No conclusions can be drawn from this check.'));}
-    else{
-      if(data.mode==='ollama'){
-        const counts=el('div','brief-counts');
-        for(const [label,key,cls] of [['Positive','positive','positive'],['Negative','negative','negative'],['Neutral / unclear','neutral','neutral']]){
-          const n=el('div','count '+cls);n.append(el('strong','',String((data.counts?.[key]||0)+(key==='neutral'?(data.counts?.unclear||0):0))),el('span','',label));counts.append(n);
-        }
-        s.append(counts,el('p','sub','Headline classifications only · '+(data.counts?.unclassified||0)+' candidates unclassified. Counts are not a safety assessment.'));
-        const good=section('Good news',data.good,'No relevant positive headlines were selected.');good.classList.add('good-news');s.append(good);
-        const bad=section('Concerns worth knowing',data.attention,'No sufficiently relevant negative headlines were selected. This is not a safety assessment.');bad.classList.add('bad-news');s.append(bad);
-        if(data.other?.length){const other=el('details','more-news');other.append(el('summary','','Other relevant developments'));for(const item of data.other)other.append(article(item));s.append(other);}
-        const all=el('details','more-news');all.append(el('summary','','Browse ranked headlines (optional)'));
-        for(const [tone,label] of [['positive','Positive'],['negative','Negative'],['neutral','Neutral'],['unclear','Unclear']]){
-          const items=(data.ranked||[]).filter(x=>x.tone===tone);if(items.length)all.append(section(label,items,''));
-        }s.append(all);
-      }else {s.append(el('p','sub','Ollama was disabled or unavailable. No classification is available.'));const raw=el('details','more-news');raw.append(el('summary','','Show unclassified headlines'));for(const a of data.unclassified||[])raw.append(article(a));s.append(raw);}
-      const weather=el('div','section');weather.append(el('h2','','Official weather alerts'));
-      if(data.alerts.status!=='checked')weather.append(el('p','sub','NWS check '+data.alerts.status+'. Do not rely on this briefing for emergency notifications.'));
-      else if(!data.alerts.items.length)weather.append(el('p','sub','No active alerts returned for the configured zone at the time of this check.'));
-      else for(const a of data.alerts.items){const n=el('div','alert');n.append(el('h3','',a.title+' · '+a.severity),el('p','',a.headline),el('p','',a.instruction),external('National Weather Service',a.link));weather.append(n);}s.append(weather);
-      const coverage=el('details');coverage.append(el('summary','','Source coverage & limitations'));for(const f of data.coverage)coverage.append(el('p','',f.name+': '+(f.ok?f.count+' recent headlines':'unavailable')));coverage.append(el('p','','Checked '+new Date(data.checkedAt).toLocaleString()+'. Headlines from the last 72 hours. '+(data.model?'Local selection by '+data.model+'. ':'')+'Not exhaustive; read the source for context. No publisher is guaranteed unbiased.'));s.append(coverage);
-      if(data.coverage.some(f=>f.ok)||data.alerts.status==='checked'){briefingShown=true;api.seen().catch(()=>{s.append(el('p','sub','Could not save the daily completion date.'));});}
+function renderNews(force=false){
+  const s=scene('The world this morning','A little perspective.','A few meaningful developments, not an exhaustive view of the world.');s.classList.add('news');
+  const status=el('p','sub','Checking selected sources…'),body=el('div','brief-body'),controls=actions(btn('Skip briefing',()=>go(5),'quiet'));
+  s.append(status,controls,body);show(s);
+  function paint(data){
+    if(!s.isConnected)return;
+    if(data.skipped){status.textContent=data.reason==='already-shown'?'You already viewed today’s briefing.':'The briefing is disabled or has not started.';body.replaceChildren();controls.replaceChildren(btn('Read today’s news',()=>renderNews(true),'primary'),btn('Continue',()=>go(5),'quiet'));return;}
+    if(data.error){status.textContent='The briefing could not finish. You can try again.';controls.replaceChildren(btn('Retry',()=>renderNews(true),'primary'),btn('Continue',()=>go(5),'quiet'));return;}
+    status.textContent=data.stage==='fetching'?'Checking sources · '+data.done+' / '+data.total:data.pending?'Headlines retrieved · ranking locally '+data.done+' / '+data.total:'Checked '+(data.coverage||[]).filter(f=>f.ok).length+' / '+(data.coverage||[]).length+' sources · '+(data.candidateCount||0)+' recent headlines';
+    controls.replaceChildren(btn(data.pending?'Continue without waiting':'Continue',async()=>{if(!data.pending&&data.candidateCount>0){try{await api.seen();briefingShown=true;}catch{}}go(5);},'primary'));
+    if(!data.pending)controls.append(btn('Refresh news',()=>renderNews(true),'quiet'));
+    if(data.stage==='fetching'){body.replaceChildren();return;}
+    const open=new Set(Array.from(body.querySelectorAll('details[open]')).map(d=>d.dataset.key));body.replaceChildren();
+    const detail=(key,label)=>{const d=el('details','more-news');d.dataset.key=key;d.open=open.has(key);d.append(el('summary','',label));return d;};
+    if(data.mode==='ollama'){
+      const counts=el('div','brief-counts');for(const [label,key,cls] of [['Positive','positive','positive'],['Negative','negative','negative'],['Neutral / unclear','neutral','neutral']]){const n=el('div','count '+cls);n.append(el('strong','',String((data.counts?.[key]||0)+(key==='neutral'?(data.counts?.unclear||0):0))),el('span','',label));counts.append(n);}
+      body.append(counts,el('p','sub',(data.counts?.unclassified||0)+' headlines not classified. Headline labels are estimates, not fact checks or a safety assessment.'));
+      const good=section('Good news',data.good||[],'No relevant positive headlines selected yet.');good.classList.add('good-news');body.append(good);
+      const bad=section('Concerns worth knowing',data.attention||[],'No qualifying negative headlines selected. This is not a safety assessment.');bad.classList.add('bad-news');body.append(bad);
+      if(data.other?.length){const other=detail('other','Other relevant developments');for(const item of data.other)other.append(article(item));body.append(other);}
+      const ranked=detail('ranked','Browse ranked headlines (optional)');for(const [tone,label] of [['positive','Positive'],['negative','Negative'],['neutral','Neutral'],['unclear','Unclear']]){const items=(data.ranked||[]).filter(x=>x.tone===tone);if(items.length)ranked.append(section(label,items,''));}body.append(ranked);
+      if(data.unclassified?.length){const raw=detail('raw','Unclassified headlines');for(const item of data.unclassified)raw.append(article(item));body.append(raw);}
+    }else{
+      body.append(el('p','sub',data.pending?'Local ranking is still running. Original headlines are available now.':'Local ranking was unavailable or disabled. These original headlines have not been classified.'));
+      body.append(section('Recent relevant headlines · unclassified',data.unclassified||[],'No recent headlines retrieved. Check source coverage and retry.'));
     }
-    s.append(actions(btn('Continue',()=>go(5),'primary')));
-  }).catch(()=>{if(s.isConnected)content.textContent='Briefing unavailable. You can skip it.';});
+    if(data.alerts){const weather=el('div','section');weather.append(el('h2','','Official weather alerts'));if(data.alerts.status!=='checked')weather.append(el('p','sub','NWS check '+data.alerts.status+'. Not an emergency notification service.'));else if(!data.alerts.items.length)weather.append(el('p','sub','No active alerts returned for your configured zone at check time.'));else for(const a of data.alerts.items){const n=el('div','alert');n.append(el('h3','',a.title+' · '+a.severity),el('p','',a.headline),el('p','',a.instruction),external('National Weather Service',a.link));weather.append(n);}body.append(weather);}
+    const coverage=detail('coverage','Source coverage & limitations');for(const f of data.coverage||[])coverage.append(el('p','',f.name+': '+(f.ok?f.count+' recent headlines':f.reason||'unavailable')));coverage.append(el('p','','Last 72 hours; at most 96 candidates, 48 prioritized for local classification. Publisher headlines are not independently verified.'));body.append(coverage);
+  }
+  async function tick(first=false){try{const data=first?await api.briefing(force):await api.briefingStatus();if(!s.isConnected)return;paint(data);if(data.pending)newsPoll=setTimeout(()=>tick(),1200);}catch{if(s.isConnected){status.textContent='Briefing unavailable.';controls.replaceChildren(btn('Retry',()=>renderNews(true),'primary'),btn('Continue',()=>go(5),'quiet'));}}}
+  tick(true);
 }
 function stopSound(){soundToken++;soundOn=false;if(audio){audio.pause();audio=null;}if(objectUrl){URL.revokeObjectURL(objectUrl);objectUrl=null;}for(const o of oscillators)try{o.stop();}catch{}oscillators=[];if(ctx){ctx.close().catch(()=>{});ctx=null;}padGain=null;sound.textContent='Sound off';sound.setAttribute('aria-pressed','false');}
 async function startSound(override=null){
