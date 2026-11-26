@@ -5,6 +5,7 @@ const smoke=process.argv.includes('--smoke-test');
 if(smoke)app.setPath('userData',require('node:fs').mkdtempSync(path.join(require('node:os').tmpdir(),'bestill-smoke-')));
 const Parser=require('rss-parser');
 const C=require('./core.cjs');
+const {catalog,getRecording,validRecording}=require('./recordings.cjs');
 const {commentary,resources}=require('./study.cjs');
 try{process.loadEnvFile(path.join(__dirname,'..','.env'));}catch(e){if(e.code!=='ENOENT')console.warn('Could not read local environment configuration.');}
 let config={...C.DEFAULTS},win,ritual,briefingPromise,briefingDate,writeQueue=Promise.resolve(),esvToken='',approvedLinks=new Set(),briefState=null,briefJob=null;
@@ -116,8 +117,13 @@ function bind(channel,handler){ipcMain.handle(channel,(event,...args)=>{
 });}
 function getBriefing(force=false){return startBriefing(force===true);}
 function newsPreferences(c){return JSON.stringify([c.news,c.ai,c.model,c.region,c.feeds]);}
+const audioPath=id=>path.join(app.getPath('userData'),'recordings',id+'.ogg');
+async function localRecording(id){const meta=getRecording(id);if(!meta)return null;try{const file=audioPath(id);if((await fs.stat(file)).size!==meta.bytes)return null;const bytes=await fs.readFile(file);return validRecording(id,bytes)?{mime:'audio/ogg',bytes,title:meta.title,credit:meta.author+' · '+meta.license}:null;}catch{return null;}}
+async function installRecording(id){const meta=getRecording(id);if(!meta||smoke)return false;if(await localRecording(id))return true;const res=await request(meta.url,{headers:{'User-Agent':'BeStill/0.9 (personal desktop app; github.com/TimothyAllgood/bestill)'}},60000);const reader=res.body.getReader(),parts=[];let count=0;try{while(true){const {done,value}=await reader.read();if(done)break;count+=value.byteLength;if(count>meta.bytes)throw new Error('Unexpected file size');parts.push(Buffer.from(value));}}finally{await reader.cancel().catch(()=>{});}const bytes=Buffer.concat(parts);if(!validRecording(id,bytes))throw new Error('Recording failed integrity check');const file=audioPath(id);await fs.mkdir(path.dirname(file),{recursive:true});await fs.writeFile(file,bytes,{mode:0o600});return true;}
 function register(){
-  bind('session',()=>{void getBriefing();return {ritual:{...ritual,resources:resources(ritual.reference),hasCommentary:!!commentary(ritual.reference)},config:{...config,track:!!config.track,hasEsvKey:!!(esvToken||process.env.ESV_API_KEY)},today:C.localDate(),feeds:C.FEEDS};});
+  bind('recording',localRecording);
+  bind('install-recording',installRecording);
+  bind('session',()=>{void getBriefing();return {ritual:{...ritual,resources:resources(ritual.reference),hasCommentary:!!commentary(ritual.reference)},recordings:Object.keys(catalog).map(id=>{const {title,author,license,licenseUrl,source,bytes}=getRecording(id);return {id,title,author,license,licenseUrl,source,bytes};}),config:{...config,track:!!config.track,hasEsvKey:!!(esvToken||process.env.ESV_API_KEY)},today:C.localDate(),feeds:C.FEEDS};});
   bind('scripture',scripture);
   bind('commentary',ref=>ref===ritual.reference?commentary(ref):null);
   bind('esv-key',saveToken);
@@ -146,7 +152,7 @@ function register(){
 function createWindow(){
   ritual=C.makeRitual(Math.random,config.readingMode,config.visualMode,config.ritualMode,new Date(),config.literature);resetBriefing();
   const links=resources(ritual.reference);
-  approvedLinks=new Set([...links.videos.map(v=>v.url),links.passageVideo?.url,links.collection,ritual.inspiration?.source,ritual.wonder?.source,links.net,links.tgc,links.bibleProject,commentary(ritual.reference)?.source,ritual.study,C.esvLink(ritual.reference),C.esvLink(ritual.context),...ritual.related.map(C.esvLink),'https://www.weather.gov/','https://api.esv.org/']);
+  approvedLinks=new Set([...Object.keys(catalog).flatMap(id=>{const x=getRecording(id);return [x.source,x.licenseUrl];}),...links.videos.map(v=>v.url),links.passageVideo?.url,links.collection,ritual.inspiration?.source,ritual.wonder?.source,links.net,links.tgc,links.bibleProject,commentary(ritual.reference)?.source,ritual.study,C.esvLink(ritual.reference),C.esvLink(ritual.context),...ritual.related.map(C.esvLink),'https://www.weather.gov/','https://api.esv.org/']);
   win=new BrowserWindow({title:'Be Still',fullscreen:smoke||config.fullscreen,width:1100,height:760,minWidth:420,minHeight:550,backgroundColor:'#111310',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true}});
   win.webContents.on('before-input-event',(event,input)=>{if(input.type==='keyDown'&&!input.isAutoRepeat&&(input.key==='F11'||(input.key==='Escape'&&win.isFullScreen()))){event.preventDefault();win.setFullScreen(input.key==='F11'?!win.isFullScreen():false);}});
   win.webContents.setWindowOpenHandler(()=>({action:'deny'}));

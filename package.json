@@ -1,13 +1,13 @@
 {
   "name": "bestill",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "private": true,
   "description": "A quiet local-first Christian morning ritual",
   "main": "src/main.cjs",
   "scripts": {
     "start": "electron .",
     "test": "node --test",
-    "check": "node --check src/main.cjs && node --check src/preload.cjs && node --check src/renderer.js && node --check src/core.cjs && node --check src/study.cjs && node --check src/music.js && node --check src/study/resources.cjs && node --check src/content.cjs && node --check src/bible.cjs && node --check src/inspiration.cjs && node --check src/atmosphere.cjs && node --check src/ritual-variants.cjs && node --check src/soundscapes.js",
+    "check": "node --check src/main.cjs && node --check src/preload.cjs && node --check src/renderer.js && node --check src/core.cjs && node --check src/study.cjs && node --check src/music.js && node --check src/study/resources.cjs && node --check src/content.cjs && node --check src/bible.cjs && node --check src/inspiration.cjs && node --check src/atmosphere.cjs && node --check src/ritual-variants.cjs && node --check src/soundscapes.js && node --check src/recordings.cjs",
     "build:win": "electron-builder --win portable --x64 --publish never"
   },
   "engines": {
