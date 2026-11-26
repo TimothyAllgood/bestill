@@ -1,6 +1,7 @@
 // Original reflection prompts; Scripture is fetched from Crossway, never generated.
 const {chapters,shortReadings,shortReading,chapterReading}=require('./bible.cjs');
 const {entries:inspirations}=require('./inspiration.cjs');
+const {atmosphere}=require('./atmosphere.cjs');
 const arrivals = [
   'You do not have to carry tomorrow today.',
   'There is time to be still before the day begins.',
@@ -25,7 +26,23 @@ const arrivals = [
   "You are not required to solve the whole world this morning.",
   "Set aside the hurry for a moment.",
   "There is time to notice what is good.",
-  "Meet the day with an open heart."
+  "Meet the day with an open heart.",
+  "The morning is not a deadline.",
+  "Take a moment to notice the light around you.",
+  "You have permission to begin quietly.",
+  "Let your attention return to the room you are in.",
+  "Make a little room for wonder.",
+  "Begin today without comparing it to yesterday.",
+  "There is nothing to prove in this moment.",
+  "The next few minutes belong to neither work nor worry.",
+  "Let the first thing you do today be to listen.",
+  "Receive the day rather than racing toward it.",
+  "The ordinary is worth noticing.",
+  "Leave some space for the unexpected good.",
+  "You can be attentive without being hurried.",
+  "There is more to this day than its obligations.",
+  "Be here, before you try to be elsewhere.",
+  "Quiet is enough for now."
 ];
 const prayers = [
   'What uncertainty are you trying to carry alone?',
@@ -89,7 +106,57 @@ const prayers = [
   "Who has been faithful to you, and how could you thank God for them?",
   "Where do you need help accepting your limitations?",
   "What small act of love could you ask for strength to carry out?",
-  "What is something you hope to learn from God today?"
+  "What is something you hope to learn from God today?",
+  "Pray for the people who will cross your path today.",
+  "Bring your plans before God, including the ones that may change.",
+  "Ask for patience in the ordinary interruptions of the day.",
+  "Thank God for a person who showed you undeserved kindness.",
+  "Pray for someone you have not spoken to in a while.",
+  "Ask God for a heart that is quick to forgive and slow to condemn.",
+  "Bring a disappointment to God without trying to explain it away.",
+  "Pray for the teachers and caregivers in your community.",
+  "Ask for wisdom in the words you choose at home.",
+  "Thank God for the opportunity to learn something new.",
+  "Pray for people who feel forgotten by their neighbors.",
+  "Ask for humility when you receive criticism.",
+  "Bring before God a responsibility that feels too heavy.",
+  "Pray for people whose work is physically demanding.",
+  "Ask for discernment about what deserves your attention today.",
+  "Thank God for someone who has been patient with you.",
+  "Ask for courage to make peace where you can.",
+  "Pray for the needs of a household other than your own.",
+  "Bring your questions about faith honestly before God.",
+  "Ask for a generous response when you are inconvenienced.",
+  "Pray for those caring for sick loved ones.",
+  "Thank God for the good you have received through other people.",
+  "Ask for strength to keep a promise you have made.",
+  "Pray for people who are looking for meaningful work.",
+  "Ask for humility when you succeed.",
+  "Pray for people who have been treated unjustly.",
+  "Bring your ambitions before God and ask for wisdom about them.",
+  "Thank God for the beauty of something you noticed recently.",
+  "Ask for gentleness in an upcoming conversation.",
+  "Pray for the people who lead your church.",
+  "Ask for a willingness to admit when you are wrong.",
+  "Bring a friendship before God and ask how to nurture it.",
+  "Pray for someone who is facing a difficult decision.",
+  "Ask for help keeping your priorities in order.",
+  "Thank God for the grace to begin again.",
+  "Pray for someone living far from home.",
+  "Ask for wisdom in teaching or mentoring another person.",
+  "Bring before God something about the future you cannot settle today.",
+  "Pray for those recovering from illness or loss.",
+  "Ask for a heart that delights in other people's successes.",
+  "Thank God for something you did not have to earn.",
+  "Pray for those who serve quietly behind the scenes.",
+  "Ask for endurance in doing good when results are slow.",
+  "Bring to God an area where you want to grow in honesty.",
+  "Pray for reconciliation among people who are divided.",
+  "Ask for the courage to set aside work when it is time to rest.",
+  "Thank God for the opportunity to help someone today.",
+  "Ask for a deeper love of your neighbor.",
+  "Pray for children growing up in difficult circumstances.",
+  "Ask God to help you practice what you have learned from Scripture."
 ];
 const gratitude = [
   'What do you have today that you once hoped for?',
@@ -125,7 +192,37 @@ const gratitude = [
   "What is beautiful about today’s weather, light or surroundings?",
   "What is a book, song or story you are thankful exists?",
   "What moment of laughter can you remember?",
-  "What freedom or opportunity are you grateful to have?"
+  "What freedom or opportunity are you grateful to have?",
+  "What is a kindness you can remember from childhood?",
+  "What about your home helps you rest?",
+  "What conversation have you enjoyed recently?",
+  "What ordinary object makes your day easier?",
+  "What has someone taught you through their example?",
+  "What place nearby do you enjoy simply being in?",
+  "What is one thing you appreciate about your own growth?",
+  "What task are you glad you learned how to do?",
+  "What part of nature would you like to notice today?",
+  "What is a meal you have shared with someone you love?",
+  "What is a small comfort you might otherwise overlook?",
+  "What have you received that you could never have planned?",
+  "What is a moment when someone listened to you well?",
+  "What skill or interest brings you delight?",
+  "What has a difficult experience taught you?",
+  "What is a book you are glad someone wrote?",
+  "What is one thing you appreciate about your neighborhood?",
+  "What is something your family does that makes you smile?",
+  "What is a way someone made your life easier yesterday?",
+  "What familiar sound or scent brings you good memories?",
+  "What opportunity to create something do you have today?",
+  "What part of your daily routine are you grateful for?",
+  "Who is someone you are glad to have known?",
+  "What small act of generosity have you witnessed?",
+  "What do you enjoy that has nothing to do with being productive?",
+  "What is a moment of peace you have experienced recently?",
+  "What would you miss about the season you are in?",
+  "What is something you can share with someone else today?",
+  "What is a favorite memory of being outdoors?",
+  "What is one gift of today that you can receive without asking for more?"
 ];
 const endings = [
   'Love the people in front of you. Do the work before you.',
@@ -139,7 +236,23 @@ const endings = [
   "Carry what matters. Set down what you cannot control.",
   "Take the day as it comes, with faith and kindness.",
   "Make time for ordinary joys.",
-  "Choose patience when the day feels hurried."
+  "Choose patience when the day feels hurried.",
+  "Be attentive to the ordinary.",
+  "Let kindness be part of your work.",
+  "Give the people you love your unhurried attention.",
+  "Notice the beauty that is already here.",
+  "Make room for a little wonder.",
+  "Do not hurry past the life you are living.",
+  "Live the day rather than measuring it.",
+  "Keep your promises, and leave room for grace.",
+  "Let what you do today be shaped by love.",
+  "Do the next faithful thing.",
+  "Make a little space for rest.",
+  "Be curious, be kind, be present.",
+  "Remember to enjoy what you have worked for.",
+  "Listen well. Speak gently.",
+  "Look for someone you can encourage.",
+  "Let today be a day of small, good things."
 ];
 // Reference, surrounding passage, human-written study URL, suggested related readings.
 // Related readings are editorial suggestions, not an exhaustive cross-reference system.
@@ -191,8 +304,8 @@ const reflections={
  'Isaiah 41:10':'Who is being addressed in the surrounding passage, and what does God promise them?',
  '2 Timothy 1:7':'How does the surrounding letter connect courage with faithfulness?'
 };
-function makeRitual(random=Math.random,mode='short') {
+function makeRitual(random=Math.random,mode='short',visualMode='rotate') {
   const [reference,context,study,related]=mode==='chapter'?chapterReading(choose(chapters,random)):choose(passages,random);
-  return {arrival:choose(arrivals,random),prayer:choose(prayers,random),gratitude:choose(gratitude,random),ending:choose(endings,random),inspiration:choose(inspirations,random),reference,context,study,related,reflection:reflections[reference]||'What does this passage reveal about God in its surrounding context?'};
+  return {arrival:choose(arrivals,random),prayer:choose(prayers,random),gratitude:choose(gratitude,random),ending:choose(endings,random),inspiration:choose(inspirations,random),atmosphere:atmosphere(random,visualMode),reference,context,study,related,reflection:reflections[reference]||'What does this passage reveal about God in its surrounding context?'};
 }
-module.exports={makeRitual,passages,originalPassages,prayers,gratitude};
+module.exports={makeRitual,passages,originalPassages,prayers,gratitude,arrivals,endings};

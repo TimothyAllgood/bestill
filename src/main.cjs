@@ -144,7 +144,7 @@ function register(){
   bind('finish',()=>win?.close());
 }
 function createWindow(){
-  ritual=C.makeRitual(Math.random,config.readingMode);resetBriefing();
+  ritual=C.makeRitual(Math.random,config.readingMode,config.visualMode);resetBriefing();
   const links=resources(ritual.reference);
   approvedLinks=new Set([...links.videos.map(v=>v.url),links.passageVideo?.url,links.collection,ritual.inspiration?.source,links.net,links.tgc,links.bibleProject,commentary(ritual.reference)?.source,ritual.study,C.esvLink(ritual.reference),C.esvLink(ritual.context),...ritual.related.map(C.esvLink),'https://www.weather.gov/','https://api.esv.org/']);
   win=new BrowserWindow({title:'Be Still',fullscreen:smoke||config.fullscreen,width:1100,height:760,minWidth:420,minHeight:550,backgroundColor:'#111310',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true}});
