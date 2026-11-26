@@ -53,7 +53,7 @@ function normalizeItems(feed,items,now=Date.now()){
   return items.flatMap(item=>{
     const title=clean(item.title),link=safeUrl(item.link),date=Date.parse(item.isoDate||item.pubDate||'');
     if(!title||!link||!Number.isFinite(date)||date>now+300000||date<now-72*3600000)return [];
-    return [{title,link,date:new Date(date).toISOString(),source:feed.name,sourceId:feed.id}];
+    const excerpt=clean(typeof item.contentSnippet==='string'?item.contentSnippet.replace(/<[^>]*>/g,' '):'',280);return [{title,link,date:new Date(date).toISOString(),source:feed.name,sourceId:feed.id,excerpt:excerpt===title?'':excerpt}];
   }).sort((a,b)=>Date.parse(b.date)-Date.parse(a.date)).slice(0,14);
 }
 function topicPriority(item){
@@ -61,13 +61,28 @@ function topicPriority(item){
  const terms=/\b(ai|artificial intelligence|software|developer|programming|engineer(?:s|ing)?|open.source|open.weight|jobs?|employment|layoffs?|hiring|wages?|inflation|housing|affordability|louisiana|new orleans|st\. tammany|medical|health|breakthrough|research)\b/;
  return (terms.test(title)?2:0)+(/^(axios|axios-nola|la-illuminator|register|techcrunch-ai|hf-blog|github-blog|npr-economy|bls|dol)$/.test(item.sourceId)?1:0);
 }
+function sourceFamily(id){return id.startsWith('bbc-')?'bbc':id.startsWith('guard-')?'guardian':id.startsWith('axios')?'axios':id.startsWith('npr')?'npr':id;}
 function combineItems(groups){
-  const seen=new Set(),out=[];
-  // Round robin preserves source diversity when a publisher has a large feed.
-  for(let i=0;i<14;i++)for(const group of groups){const a=group[i];if(!a)continue;
-    const key=a.title.toLowerCase().replace(/[^a-z0-9]/g,'');
-    if(seen.has(key))continue;seen.add(key);out.push({...a,id:'n'+out.length});}
-  return out.sort((a,b)=>topicPriority(b)-topicPriority(a)||Date.parse(b.date)-Date.parse(a.date)).slice(0,96);
+ const seen=new Map(),out=[];
+ for(let i=0;i<14;i++)for(const group of groups){const a=group[i];if(!a)continue;
+  const key=a.title.toLowerCase().replace(/[^a-z0-9]/g,'');
+  if(seen.has(key)){const prior=seen.get(key);if(sourceFamily(prior.sourceId)!==sourceFamily(a.sourceId)&&!prior.alsoReported.some(x=>x.link===a.link)&&prior.alsoReported.length<3)prior.alsoReported.push({source:a.source,link:a.link});continue;}
+  const item={...a,id:'n'+out.length,alsoReported:[]};seen.set(key,item);out.push(item);}
+ return diverseCandidates(out,96);
+}
+function topic(item){
+ const t=item.title.toLowerCase();
+ if(/louisiana|new orleans|st\. tammany|baton rouge/.test(t)||/axios-nola|la-illuminator/.test(item.sourceId))return 'local';
+ if(/\b(jobs?|employment|layoffs?|hiring|wages?|inflation|housing|affordability|economy|unemployment)\b/.test(t)||/^(bls|dol|fed|npr-economy)$/.test(item.sourceId))return 'work';
+ if(/\b(ai|artificial intelligence|software|developer|programming|engineer|open.source|open.weight)\b/.test(t)||/^(bbc-tech|ars|register|techcrunch-ai|mit-tech|hf-blog|github-blog)$/.test(item.sourceId))return 'technology';
+ if(/\b(health|medical|research|science|space|wildlife|breakthrough|conservation)\b/.test(t)||/^(nasa|nih|bbc-science|guard-science|science-news|gnn)$/.test(item.sourceId))return 'discovery';
+ return 'general';
+}
+function diverseCandidates(items,limit=48){
+ const order=['local','work','technology','discovery','general'],buckets=new Map(order.map(x=>[x,[]]));
+ for(const item of [...items].sort((a,b)=>topicPriority(b)-topicPriority(a)||Date.parse(b.date)-Date.parse(a.date)))buckets.get(topic(item)).push(item);
+ const out=[],families=new Map();while(out.length<limit&&order.some(k=>buckets.get(k).length)){for(const k of order){const pool=buckets.get(k);if(!pool.length||out.length===limit)continue;let i=pool.findIndex(x=>(families.get(sourceFamily(x.sourceId))||0)<Math.max(2,Math.ceil(out.length/6)));if(i<0)i=0;const [x]=pool.splice(i,1);const family=sourceFamily(x.sourceId);families.set(family,(families.get(family)||0)+1);out.push(x);}}
+ return out;
 }
 function applySelection(items,selection){
   const ids=new Map(items.map(a=>[a.id,a])),used=new Set();
@@ -101,4 +116,4 @@ function alertItems(features){
 }
 function esvLink(ref){return 'https://www.esv.org/'+encodeURIComponent(ref.replace(/ /g,'+')).replace(/%2B/g,'+')+'/';}
 function allowedPassage(ref){return chapterSet.has(ref)||passages.some(p=>p[0]===ref||p[1]===ref||p[3].includes(ref));}
-module.exports={FEEDS,DEFAULTS,migrateFeeds,newsDecision,canComplete,topicPriority,localDate,safeUrl,clean,settings,normalizeItems,combineItems,applySelection,rankScored,fallback,alertItems,esvLink,allowedPassage,makeRitual};
+module.exports={FEEDS,DEFAULTS,migrateFeeds,newsDecision,canComplete,topicPriority,diverseCandidates,localDate,safeUrl,clean,settings,normalizeItems,combineItems,applySelection,rankScored,fallback,alertItems,esvLink,allowedPassage,makeRitual};

@@ -30,3 +30,6 @@ body[data-still=true]::after,body[data-still=true] .breath{animation:none}body[d
 @media(prefers-reduced-motion:reduce){body::after,.breath{animation:none!important}body::before{transition:none!important}.scene{animation:none!important}}
 
 .wonder-note{max-width:560px;margin:28px auto 0;padding:16px 0;border-top:1px solid var(--line);text-align:center;color:var(--muted)}.wonder-note summary{font-size:13px;color:var(--sage)}.wonder-note h2{font:normal 23px var(--serif);margin:20px 0 6px;color:var(--ink)}.wonder-note p{font:normal 18px/1.6 var(--serif);color:var(--ink);margin:14px auto 8px}.action-note{margin-top:20px}
+
+/* Optional context remains quiet, with no extra dashboard surfaces. */
+.headline-row{border-bottom:1px solid var(--line);padding-bottom:8px}.headline-row:last-child{border-bottom:0}.editorial-news .headline-row .article{border:0;padding-bottom:6px}.headline-context{padding:0 0 9px 0}.headline-context summary{font-size:12px}.headline-context p{font-size:13px;line-height:1.65;margin:8px 0}.headline-context .credit{font-size:11px}.headline-context .quiet{padding-left:0}.closing-quote{font-kerning:normal;letter-spacing:-.015em}.chapter-scene .verse{font-kerning:normal;line-height:1.85}.eyebrow{letter-spacing:.16em}
