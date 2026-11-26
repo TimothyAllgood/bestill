@@ -102,3 +102,5 @@ Stay here pauses the arrival timer; Another passage/reading changes only that se
 Additional literary collection: 103 total; 20 wonders. News now labels reported events/data versus forecasts, opinion, marketing or unclear claims, keeping speculative items outside the concrete good/concern sections.
 
 Curated short references now 933; 2122 passage/chapter entries with source-derived cross references. Cross-reference data adapted from OpenBible.info, CC BY, 2016-02-01 snapshot, mirrored at https://github.com/neuu-org/bible-crossrefs-dataset/tree/8aa012820f5881a787e87d71005a22f52844c4fb. Links ranked by source votes and checked against WEBU verse inventory. Not a theological endorsement.
+
+Three new optional recordings: light rainfall (Mijesty, CC BY-SA 4.0), steady rain (Sage Ross, CC BY-SA 3.0), Whispers in the Rain (zero-project, CC BY 3.0). All original bytes pinned by published digest; the modern piece is manual only pending listening review. Additional Matthew Henry sections included.

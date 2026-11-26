@@ -90,6 +90,33 @@ const catalog={
     "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
     "sha1": "0ad99063b4d2cc36982d7b945a78740ccabd4335",
     "bytes": 3648933
+  },
+  "recorded-light-rain": {
+    "title": "Light rainfall · field recording",
+    "file": "Sound_of_light_rainfall.ogg",
+    "author": "Mijesty",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "sha1": "c90581d633dc5a8d4ec123c0341b8dc5aac60de4",
+    "bytes": 647064
+  },
+  "recorded-steady-rain": {
+    "title": "Steady rain · 5-minute recording",
+    "file": "Heavy_rain_in_Glenshaw,_PA.ogg",
+    "author": "Sage Ross",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "sha1": "d0ce9d4b5f63541bbe23df6048aab25d3b10a338",
+    "bytes": 1434884
+  },
+  "recorded-whispers": {
+    "title": "Whispers in the Rain · zero-project",
+    "file": "Zero-project_-_Whispers_in_the_rain.opus",
+    "author": "zero-project",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "sha1": "877fd57bb8ce2f05bb94e3bc911d569796dd70ea",
+    "bytes": 4009445
   }
 };
 function getRecording(id){if(!Object.hasOwn(catalog,id))return null;const x=catalog[id],h=createHash('md5').update(x.file).digest('hex');return {...x,id,source:'https://commons.wikimedia.org/wiki/File:'+x.file,url:'https://upload.wikimedia.org/wikipedia/commons/'+h[0]+'/'+h.slice(0,2)+'/'+encodeURIComponent(x.file)};}

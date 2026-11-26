@@ -2,11 +2,11 @@
 (function(root){
  const nature=['rain','creek','ocean','wind'];
  const hymns=['amazing-grace','doxology','abide'];
- const recordedNature=['recorded-stream','recorded-long-creek','recorded-birdsong','recorded-dawn'];
+ const recordedNature=['recorded-stream','recorded-long-creek','recorded-birdsong','recorded-dawn','recorded-light-rain','recorded-steady-rain'];
  const piano=['recorded-satie','recorded-nocturne','recorded-nocturne55'];
  const organ=['recorded-organ','recorded-eventide'];
  const modes=['random','random-nature','random-music','random-hymns','local-library','hymns'];
- const known=[...nature,'woodland','thunder','brown-noise','ambient','morning-light','quiet-waters','soft-piano','soft-strings',...hymns,...recordedNature,...piano,...organ,'recorded-rain'];
+ const known=[...nature,'woodland','thunder','brown-noise','ambient','morning-light','quiet-waters','soft-piano','soft-strings',...hymns,...recordedNature,...piano,...organ,'recorded-rain','recorded-whispers'];
  function pool(mode,installed=[],localCount=0,excluded=[]){
   const available=new Set(installed),blocked=new Set(excluded),allowed=ids=>ids.filter(x=>!blocked.has(x)),downloaded=ids=>allowed(ids.filter(x=>available.has(x)));
   const realNature=downloaded(recordedNature),realMusic=downloaded(piano),realHymns=downloaded(organ);
