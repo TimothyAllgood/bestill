@@ -117,5 +117,6 @@ function alertItems(features){
   });
 }
 function esvLink(ref){return 'https://www.esv.org/'+encodeURIComponent(ref.replace(/ /g,'+')).replace(/%2B/g,'+')+'/';}
-function allowedPassage(ref){return chapterSet.has(ref)||passages.some(p=>p[0]===ref||p[1]===ref||p[3].includes(ref));}
+const externalRefs=new Set(Object.values(require('./study/crossrefs.json')).flat());
+function allowedPassage(ref){return externalRefs.has(ref)||chapterSet.has(ref)||passages.some(p=>p[0]===ref||p[1]===ref||p[3].includes(ref));}
 module.exports={FEEDS,DEFAULTS,migrateFeeds,newsDecision,canComplete,topicPriority,diverseCandidates,localDate,safeUrl,clean,settings,normalizeItems,combineItems,applySelection,rankScored,fallback,alertItems,esvLink,allowedPassage,makeRitual};
