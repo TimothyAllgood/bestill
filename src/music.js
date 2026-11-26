@@ -8,6 +8,8 @@ const TRACKS={
 'doxology':{title:'Doxology',credit:'OLD HUNDREDTH · Genevan Psalter, 1551; attributed to Louis Bourgeois',tempo:64,root:55,notes:[...line([67,67,66,64,62,67,69,71]),...line([71,71,71,69,67,72,71,69]),...line([67,69,71,69,67,64,66,67]),...line([74,71,67,69,72,71,69,67])]},
 'abide':{title:'Abide with Me',credit:'EVENTIDE · William Henry Monk, 1861',tempo:63,root:51,notes:[n(67,2),n(67),n(65),n(63,2),n(70,2),n(72),n(70),n(70),n(68),n(67,4),n(67,2),n(68),n(70),n(72,2),n(70,2),n(68),n(65),n(67),n(69),n(70,4),n(67,2),n(67),n(65),n(63,2),n(70,2),n(70),n(68),n(68),n(67),n(65,4),n(65,2),n(67),n(68),n(67),n(65),n(63),n(68),n(67,2),n(65,2),n(63,4)]},
 'morning-light':{title:'Morning Light',credit:'Original Be Still ambient arrangement',tempo:55,root:48,notes:[n(67,4),n(72,4),n(76,5),n(74,3),n(69,4),n(65,4),n(67,6),n(72,6)],chords:[[48,55,64],[45,52,60],[41,48,57],[43,50,59],[48,55,64],[45,52,60],[41,48,57],[48,55,64]]},
+'soft-piano':{title:'Window Light',credit:'Original Be Still piano-style synthesis',tempo:57,root:48,notes:[n(60,2),n(64,2),n(67,3),n(72,3),n(69,2),n(67,2),n(64,3),n(62,3),n(65,2),n(69,2),n(67,3),n(60,4)],piano:true,chords:[[48,55,64],[48,55,60],[45,52,64],[45,52,60],[41,48,57],[41,48,60],[43,50,59],[43,50,62],[41,48,57],[41,48,60],[43,50,59],[48,55,64]]},
+'soft-strings':{title:'Still Air',credit:'Original Be Still strings-style synthesis',tempo:48,root:48,notes:[n(64,5),n(67,5),n(69,5),n(67,5),n(65,5),n(64,5),n(62,5),n(60,5)],chords:[[48,55,64],[48,55,67],[45,52,64],[45,52,60],[41,48,57],[41,48,60],[43,50,59],[48,55,64]]},
 'quiet-waters':{title:'Quiet Waters',credit:'Original Be Still ambient arrangement',tempo:48,root:50,notes:[n(66,5),n(69,5),n(74,6),n(69,4),n(64,5),n(66,5),n(69,6),n(62,6)],chords:[[50,57,66],[47,54,62],[43,50,62],[45,52,61],[50,57,66],[47,54,62],[43,50,59],[50,57,66]]}
 };
 const hymns=['amazing-grace','doxology','abide'],lead=1.5,tail=3.5;
@@ -21,7 +23,7 @@ function voice(ctx,out,pitch,start,length,volume,pad=false){
 }
 async function render(id){
  const track=TRACKS[id];if(!track)throw new Error('Unknown sound');const rate=22050,ctx=new OfflineAudioContext(1,Math.ceil(duration(track)*rate),rate),out=ctx.createGain();out.gain.value=.62;out.connect(ctx.destination);const beat=60/track.tempo;let t=lead;
- track.notes.forEach(([pitch,beats],i)=>{const len=beats*beat;voice(ctx,out,pitch,t,len*.88,.09,Boolean(track.chords));if(track.chords){for(const note of track.chords[i])voice(ctx,out,note,t,len*.97,.025,true);}else if(i%4===0){voice(ctx,out,track.root,t,Math.min(beat*3,len+beat),.028,true);voice(ctx,out,track.root+7,t,Math.min(beat*3,len+beat),.014,true);}t+=len;});return ctx.startRendering();
+ track.notes.forEach(([pitch,beats],i)=>{const len=beats*beat;voice(ctx,out,pitch,t,len*.88,.09,Boolean(track.chords&&!track.piano));if(track.chords){for(const note of track.chords[i])voice(ctx,out,note,t,len*.97,.025,true);}else if(i%4===0){voice(ctx,out,track.root,t,Math.min(beat*3,len+beat),.028,true);voice(ctx,out,track.root+7,t,Math.min(beat*3,len+beat),.014,true);}t+=len;});return ctx.startRendering();
 }
 const library={TRACKS,resolve,duration,render};
 if(typeof module!=='undefined'&&module.exports)module.exports=library;else root.BeStillMusic=library;
