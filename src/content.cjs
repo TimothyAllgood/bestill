@@ -119,8 +119,24 @@ const passages = [
   ["1 Thessalonians 5:16-18","1 Thessalonians 5:12-24","https://www.bibleref.com/1-Thessalonians/5/1-Thessalonians-5-16.html",["Philippians 4:4-7","Colossians 3:17"]]
 ];
 function choose(items,random) { return items[Math.floor(random()*items.length)]; }
+const reflections={
+ 'Psalm 46:10':'What does the whole psalm say about God’s presence amid trouble?',
+ 'Matthew 6:34':'How does Jesus connect worry about tomorrow with trust in the Father?',
+ 'Psalm 23:1-3':'What images does the psalm use to describe the Lord’s care?',
+ 'Proverbs 3:5-6':'How does this passage distinguish trust in God from confidence in your own understanding?',
+ 'Matthew 11:28-30':'What does Jesus invite the weary to learn from him?',
+ 'Philippians 4:7':'How does the surrounding passage connect prayer, thanksgiving and peace?',
+ 'James 1:19':'What might being quick to listen and slow to speak look like today?',
+ 'Romans 12:18':'What is within your responsibility when seeking peace with someone?',
+ 'Colossians 3:12':'Which of the qualities Paul describes is most challenging to practice?',
+ 'Hebrews 12:1-2':'What does the image of running a race suggest about endurance and attention?',
+ '1 Thessalonians 5:16-18':'How do rejoicing, prayer and thanksgiving fit together in this passage?',
+ 'Lamentations 3:22-23':'How does the surrounding lament shape the expression of hope in these verses?',
+ 'Isaiah 41:10':'Who is being addressed in the surrounding passage, and what does God promise them?',
+ '2 Timothy 1:7':'How does the surrounding letter connect courage with faithfulness?'
+};
 function makeRitual(random=Math.random) {
   const [reference,context,study,related]=choose(passages,random);
-  return {arrival:choose(arrivals,random),prayer:choose(prayers,random),gratitude:choose(gratitude,random),ending:choose(endings,random),reference,context,study,related};
+  return {arrival:choose(arrivals,random),prayer:choose(prayers,random),gratitude:choose(gratitude,random),ending:choose(endings,random),reference,context,study,related,reflection:reflections[reference]||'What does this passage reveal about God in its surrounding context?'};
 }
 module.exports={makeRitual,passages};

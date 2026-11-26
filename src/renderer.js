@@ -6,7 +6,7 @@ function btn(text,fn,cls=''){const b=el('button',cls,text);b.type='button';b.add
 function actions(...buttons){const a=el('div','actions');a.append(...buttons);return a;}
 function external(label,url,cls=''){return btn(label,()=>api.open(url).catch(()=>{}),cls);}
 function scene(label,title,sub){const s=el('section','scene');if(label)s.append(el('p','eyebrow',label));if(title)s.append(el('h1','',title));if(sub)s.append(el('p','sub',sub));return s;}
-function show(s){clearTimeout(newsPoll);stage.replaceChildren(s);stage.focus({preventScroll:true});stage.scrollIntoView({block:'start'});}
+function show(s){clearTimeout(newsPoll);stage.replaceChildren(s);stage.scrollTop=0;stage.focus({preventScroll:true});}
 function dots(){const d=el('div','dots');d.setAttribute('aria-label','Step '+(step+1)+' of 6');for(let i=0;i<6;i++)d.append(el('span','dot'+(i===step?' active':'')));progress.replaceChildren(d);back.hidden=step===0;}
 function cancelTimer(){clearTimeout(timer);}
 function schedule(){cancelTimer();if(step===0&&!dialog.open)timer=setTimeout(()=>go(1),config.seconds*1000);}
@@ -29,45 +29,60 @@ function study(){
   let contextPromise;
   const options=[
     ['Context',()=>{const box=el('div','reading');box.append(el('h2','',r.context));const passage=el('p','context-text','Opening the passage…');box.append(passage);contextPromise??=api.scripture(r.context);contextPromise.then(v=>{if(!box.isConnected)return;passage.textContent=v.text||v.notice;box.append(el('p','credit',v.text?v.notice:''),external('Open at ESV.org ↗',v.link,'quiet'));}).catch(()=>{passage.textContent='Context unavailable.';});return box;}],
-    ['Explanation',()=>{const box=el('div','reading');box.append(el('h2','','Matthew Henry’s Concise Commentary'));const note=el('p','sub','Opening the included commentary…');box.append(note);api.commentary(r.reference).then(v=>{if(!box.isConnected)return;if(!v){note.textContent='No included commentary for this passage.';return;}note.textContent=v.author+' · Verses '+v.range;const text=el('div','commentary-text');for(const paragraph of v.content.split(/\n\s*\n/))text.append(el('p','',paragraph));box.append(text);const credits=el('details','study-credits');credits.append(el('summary','','About this commentary'),el('p','',v.title+' · '+v.license+'. Historical Protestant devotional interpretation, not Scripture or a modern scholarly consensus. Original wording retained.'),external('View exact source edition ↗',v.source,'quiet'),external('Alternative human commentary: BibleRef ↗',r.study,'quiet'));box.append(credits);}).catch(()=>{note.textContent='Commentary could not be loaded.';});return box;}],
+    ['Explore',()=>{const box=el('div','reading'),res=r.resources||{};
+      box.append(el('h2','','Explore the passage'),el('p','sub','Choose a human-authored resource. These are different perspectives, not authoritative interpretations.'));
+      if(res.video){const v=el('div','resource-feature');v.append(el('p','eyebrow','BibleProject · Video'),el('h3','',res.video.title),el('p','sub',res.video.scope),btn('Watch on BibleProject ↗',()=>api.open(res.video.url).catch(()=>{}),'primary'),el('p','credit','BibleProject is the author and owner of this content. To find more BibleProject resources, visit'),external('bibleproject.com ↗',res.bibleProject,'quiet'));box.append(v);}
+      const row=(name,description,url)=>{const item=el('div','resource-row');item.append(el('h3','',name),el('p','sub',description),external('Open resource ↗',url,'quiet'));return item;};
+      if(config.showCommentary){const d=el('details','study-credits');d.append(el('summary','','Matthew Henry · historical devotional commentary'));let loaded=false;d.addEventListener('toggle',()=>{if(!d.open||loaded)return;loaded=true;const note=el('p','sub','Opening commentary…');d.append(note);api.commentary(r.reference).then(v=>{if(!d.isConnected)return;if(!v){note.textContent='No included commentary for this passage.';return;}note.textContent=v.author+' · Verses '+v.range+' · Historical Protestant perspective';const text=el('div','commentary-text');for(const paragraph of v.content.split(/\n\s*\n/))text.append(el('p','',paragraph));d.append(text,el('p','credit',v.license+' · Original wording retained.'),external('View source edition ↗',v.source,'quiet'));}).catch(()=>{note.textContent='Commentary unavailable.';loaded=false;});});box.append(d);}
+      box.append(row('BibleRef','Verse explanation · evangelical perspective',r.study),row('NET Bible study notes','Translation choices, language and historical context. Search for '+r.reference+'.',res.net),row('The Gospel Coalition','Book commentary library · Reformed evangelical perspective.',res.tgc));return box;}],
     ['Related verses',()=>{const box=el('div','reading');box.append(el('h2','','Keep reading'),el('p','sub','Expand a related verse without leaving Be Still.'));for(const ref of r.related){const details=el('details','related-verse'),text=el('p','context-text');details.append(el('summary','',ref),text);let loaded=false;details.addEventListener('toggle',()=>{if(!details.open||loaded)return;loaded=true;text.textContent='Opening passage…';api.scripture(ref).then(v=>{text.textContent=v.text||v.notice;if(v.text)details.append(el('p','credit',v.notice));details.append(external('Read at ESV.org ↗',v.link,'quiet'));}).catch(()=>{loaded=false;text.textContent='Passage unavailable.';});});box.append(details);}return box;}],
-    ['Reflect',()=>{const box=el('div','reading');box.append(el('h2','','Consider'),el('p','','What does the surrounding passage reveal about its original audience and about God?'),el('p','','What would faithfulness look like in light of this passage today?'));return box;}]
+    ['Reflect',()=>{const box=el('div','reading');box.append(el('h2','','Consider'),el('p','',r.reflection||'What does the surrounding passage reveal about God?'),el('p','','How might you live faithfully in light of this passage today?'));return box;}]
   ];
   function select(i){for(const [j,b] of Array.from(tabs.children).entries())b.setAttribute('aria-pressed',String(i===j));panel.replaceChildren(options[i][1]());}
   options.forEach(([name],i)=>tabs.append(btn(name,()=>select(i),'tab')));s.append(tabs,panel);show(s);select(0);
 }
-function article(a){const b=external(a.title+' ↗',a.link,'article');b.append(el('span','meta',a.source+' · '+new Date(a.date).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'})+(Number.isInteger(a.relevance)?' · '+['Low','Some','Relevant','Highly relevant'][a.relevance]:'')));return b;}
+function article(a){const b=external(a.title+' ↗',a.link,'article');b.append(el('span','meta',a.source+' · '+new Date(a.date).toLocaleDateString(undefined,{month:'short',day:'numeric'})));return b;}
 function section(title,items,empty){const d=el('div','section');d.append(el('h2','',title));if(!items.length)d.append(el('p','sub',empty));else for(const item of items)d.append(article(item));return d;}
 function renderNews(force=false){
-  const s=scene('The world this morning','A little perspective.','A few meaningful developments, not an exhaustive view of the world.');s.classList.add('news');
-  const status=el('p','sub','Checking selected sources…'),body=el('div','brief-body'),controls=actions(btn('Skip briefing',()=>go(5),'quiet'));
-  s.append(status,controls,body);show(s);
+  const s=scene('The world today','A little perspective.','A few stories worth knowing before you begin.');s.classList.add('news','editorial-news');
+  const status=el('p','news-status','Gathering today’s stories…'),body=el('div','brief-body'),controls=actions(btn('Continue',()=>go(5),'primary'));
+  let latest=null,signature='',leaving=false;
+  const finish=btn('Continue',async()=>{if(leaving)return;leaving=true;if(latest&&!latest.pending&&!latest.error&&!latest.skipped&&latest.candidateCount>0){try{await api.seen();briefingShown=true;}catch{}}go(5);},'primary');
+  const refresh=btn('Refresh',()=>renderNews(true),'quiet');refresh.hidden=true;controls.replaceChildren(finish,refresh);
+  s.append(status,body,controls);show(s);
   function paint(data){
-    if(!s.isConnected)return;
-    if(data.skipped){status.textContent=data.reason==='already-shown'?'You already viewed today’s briefing.':'The briefing is disabled or has not started.';body.replaceChildren();controls.replaceChildren(btn('Read today’s news',()=>renderNews(true),'primary'),btn('Continue',()=>go(5),'quiet'));return;}
-    if(data.error){status.textContent='The briefing could not finish. You can try again.';controls.replaceChildren(btn('Retry',()=>renderNews(true),'primary'),btn('Continue',()=>go(5),'quiet'));return;}
-    status.textContent=data.stage==='fetching'?'Checking sources · '+data.done+' / '+data.total:data.pending?'Headlines retrieved · ranking locally '+data.done+' / '+data.total:'Checked '+(data.coverage||[]).filter(f=>f.ok).length+' / '+(data.coverage||[]).length+' sources · '+(data.candidateCount||0)+' recent headlines';
-    controls.replaceChildren(btn(data.pending?'Continue without waiting':'Continue',async()=>{if(!data.pending&&data.candidateCount>0){try{await api.seen();briefingShown=true;}catch{}}go(5);},'primary'));
-    if(!data.pending)controls.append(btn('Refresh news',()=>renderNews(true),'quiet'));
-    if(data.stage==='fetching'){body.replaceChildren();return;}
+    if(!s.isConnected||leaving)return;latest=data;
+    const sig=JSON.stringify(data);if(sig===signature)return;signature=sig;
+    refresh.hidden=!!data.pending||data.reason==='disabled';refresh.textContent=data.skipped?'Read the news':data.error?'Try again':'Refresh';
+    finish.textContent=data.pending?'Continue without waiting':'Continue';
+    if(data.skipped){status.textContent=data.reason==='already-shown'?'You’ve already read today’s briefing. You can revisit it if you wish.':'News is turned off.';body.replaceChildren();return;}
+    if(data.error){status.textContent='Could not finish the briefing. You can try again or continue.';return;}
+    status.textContent=data.stage==='fetching'?'Gathering stories…':data.pending?'Selecting relevant stories…':(data.coverage||[]).every(f=>f.ok)?'A short selection from the last three days.':'A short selection from available sources. Some sources could not be checked.';
+    if(data.stage==='fetching')return;
+    // Preserve details and keyboard focus during partial updates; wait for blur if a story is focused.
+    if(data.pending&&body.contains(document.activeElement))return;
     const open=new Set(Array.from(body.querySelectorAll('details[open]')).map(d=>d.dataset.key));body.replaceChildren();
     const detail=(key,label)=>{const d=el('details','more-news');d.dataset.key=key;d.open=open.has(key);d.append(el('summary','',label));return d;};
+    const concise=(title,items,empty,cls)=>{const d=section(title,items,empty);d.classList.add(cls);return d;};
     if(data.mode==='ollama'){
-      const counts=el('div','brief-counts');for(const [label,key,cls] of [['Positive','positive','positive'],['Negative','negative','negative'],['Neutral / unclear','neutral','neutral']]){const n=el('div','count '+cls);n.append(el('strong','',String((data.counts?.[key]||0)+(key==='neutral'?(data.counts?.unclear||0):0))),el('span','',label));counts.append(n);}
-      body.append(counts,el('p','sub',(data.counts?.unclassified||0)+' headlines not classified. Headline labels are estimates, not fact checks or a safety assessment.'));
-      const good=section('Good news',data.good||[],'No relevant positive headlines selected yet.');good.classList.add('good-news');body.append(good);
-      const bad=section('Concerns worth knowing',data.attention||[],'No qualifying negative headlines selected. This is not a safety assessment.');bad.classList.add('bad-news');body.append(bad);
-      if(data.other?.length){const other=detail('other','Other relevant developments');for(const item of data.other)other.append(article(item));body.append(other);}
-      const ranked=detail('ranked','Browse ranked headlines (optional)');for(const [tone,label] of [['positive','Positive'],['negative','Negative'],['neutral','Neutral'],['unclear','Unclear']]){const items=(data.ranked||[]).filter(x=>x.tone===tone);if(items.length)ranked.append(section(label,items,''));}body.append(ranked);
-      if(data.unclassified?.length){const raw=detail('raw','Unclassified headlines');for(const item of data.unclassified)raw.append(article(item));body.append(raw);}
+      body.append(concise('Good things happening', (data.good||[]).slice(0,3),'No positive stories selected in this scan.','good-news'));
+      if(data.other?.length)body.append(concise('Also worth knowing',data.other.slice(0,2),'','neutral-news'));
+      const more=detail('more','More stories (optional)');const shown=new Set([...(data.good||[]).slice(0,3),...(data.other||[]).slice(0,2),...(data.attention||[]).slice(0,2)].map(x=>x.id));
+      const extra=(data.ranked||[]).filter(x=>!shown.has(x.id));for(const [tone,label] of [['positive','Positive'],['neutral','Other developments'],['negative','Negative'],['unclear','Unclear']]){const items=extra.filter(x=>x.tone===tone);if(items.length)more.append(section(label,items,''));}
+      if(data.unclassified?.length)more.append(section('Unclassified',data.unclassified,''));if(more.children.length>1)body.append(more);
+      body.append(concise('Concerns worth knowing',(data.attention||[]).slice(0,2),'No qualifying negative headlines selected in this limited scan.','bad-news'));
     }else{
-      body.append(el('p','sub',data.pending?'Local ranking is still running. Original headlines are available now.':'Local ranking was unavailable or disabled. These original headlines have not been classified.'));
-      body.append(section('Recent relevant headlines · unclassified',data.unclassified||[],'No recent headlines retrieved. Check source coverage and retry.'));
+      body.append(el('p','sub',data.pending?'Original headlines are available while selection runs.':'Ranking unavailable or disabled. These headlines are not classified.'));
+      body.append(concise('Recent headlines',(data.unclassified||[]).slice(0,5),'No stories retrieved. Try refreshing.','neutral-news'));
+      if((data.unclassified||[]).length>5){const more=detail('more','More headlines');for(const item of data.unclassified.slice(5))more.append(article(item));body.append(more);}
     }
-    if(data.alerts){const weather=el('div','section');weather.append(el('h2','','Official weather alerts'));if(data.alerts.status!=='checked')weather.append(el('p','sub','NWS check '+data.alerts.status+'. Not an emergency notification service.'));else if(!data.alerts.items.length)weather.append(el('p','sub','No active alerts returned for your configured zone at check time.'));else for(const a of data.alerts.items){const n=el('div','alert');n.append(el('h3','',a.title+' · '+a.severity),el('p','',a.headline),el('p','',a.instruction),external('National Weather Service',a.link));weather.append(n);}body.append(weather);}
-    const coverage=detail('coverage','Source coverage & limitations');for(const f of data.coverage||[])coverage.append(el('p','',f.name+': '+(f.ok?f.count+' recent headlines':f.reason||'unavailable')));coverage.append(el('p','','Last 72 hours; at most 96 candidates, 48 prioritized for local classification. Publisher headlines are not independently verified.'));body.append(coverage);
+    if(data.alerts?.items?.length){const weather=el('div','section official-alerts');weather.append(el('h2','','Official weather alerts'));for(const a of data.alerts.items){const n=el('div','alert');n.append(el('h3','',a.title+' · '+a.severity),el('p','',a.headline),el('p','',a.instruction),external('National Weather Service ↗',a.link));weather.append(n);}body.append(weather);}
+    else if(data.alerts?.status==='unavailable')body.append(el('p','sub','Official weather alerts could not be checked.'));
+    const coverage=detail('coverage','About this briefing');const counts=data.counts;coverage.append(el('p','',data.mode==='ollama'?'Local headline classification: '+counts.positive+' positive, '+counts.negative+' negative, '+(counts.neutral+counts.unclear)+' neutral/unclear, '+counts.unclassified+' unclassified.':'No model classification available.'),el('p','','This is a limited selection, not fact-checking or a personal safety assessment. Last 72 hours; at most 96 candidates and 48 considered for model ranking.'));
+    if(data.alerts)coverage.append(el('p','','Weather: '+(data.alerts.status==='checked'?(data.alerts.items.length+' alerts returned for the configured zone'):data.alerts.status)+'. Keep normal emergency alerts enabled.'));
+    for(const f of data.coverage||[])coverage.append(el('p','',f.name+': '+(f.ok?f.count+' recent headlines':f.reason||'unavailable')));body.append(coverage);
   }
-  async function tick(first=false){try{const data=first?await api.briefing(force):await api.briefingStatus();if(!s.isConnected)return;paint(data);if(data.pending)newsPoll=setTimeout(()=>tick(),1200);}catch{if(s.isConnected){status.textContent='Briefing unavailable.';controls.replaceChildren(btn('Retry',()=>renderNews(true),'primary'),btn('Continue',()=>go(5),'quiet'));}}}
+  async function tick(first=false){try{const data=first?await api.briefing(force):await api.briefingStatus();if(!s.isConnected||leaving)return;paint(data);if(data.pending)newsPoll=setTimeout(()=>tick(),1200);}catch{if(s.isConnected){status.textContent='Briefing unavailable.';refresh.hidden=false;refresh.textContent='Try again';}}}
   tick(true);
 }
 function stopSound(){soundToken++;soundOn=false;if(audio){audio.pause();audio=null;}if(objectUrl){URL.revokeObjectURL(objectUrl);objectUrl=null;}for(const o of oscillators)try{o.stop();}catch{}oscillators=[];if(ctx){ctx.close().catch(()=>{});ctx=null;}padGain=null;sound.textContent='Sound off';sound.setAttribute('aria-pressed','false');}
@@ -84,7 +99,7 @@ async function startSound(override=null){
 sound.addEventListener('click',()=>soundOn?stopSound():startSound());
 back.addEventListener('click',()=>go(Math.max(0,step-1)));
 document.querySelector('#settings').addEventListener('click',async()=>{
-  cancelTimer();for(const k of ['name','seconds','audio','volume','region'])form.elements[k].value=config[k];for(const k of ['news','ai','fullscreen'])form.elements[k].checked=config[k];
+  cancelTimer();for(const k of ['name','seconds','audio','volume','region'])form.elements[k].value=config[k];for(const k of ['news','ai','fullscreen','showCommentary'])form.elements[k].checked=config[k];
   form.elements.esvKey.value='';document.querySelector('#esv-status').textContent=config.hasEsvKey?'A key is configured. Leave blank to keep it.':'No ESV key configured.';
   const feeds=document.querySelector('#feeds');feeds.replaceChildren();for(const f of session.feeds){const label=el('label','check'),input=el('input');input.type='checkbox';input.value=f.id;input.checked=config.feeds.includes(f.id);input.name='feed';label.append(input,document.createTextNode(f.name));feeds.append(label);}
   const select=form.elements.model;select.replaceChildren(new Option('Automatic (installed model)',''));if(config.model)select.add(new Option(config.model,config.model));select.value=config.model;
@@ -94,7 +109,7 @@ document.querySelector('#settings').addEventListener('click',async()=>{
 document.querySelector('#close-settings').addEventListener('click',()=>dialog.close());dialog.addEventListener('close',()=>{if(previewing){previewing=false;stopSound();if(config.audio!=='off')startSound();}schedule();});
 document.querySelector('#preview-sound').addEventListener('click',()=>{stopSound();previewing=true;const mode=form.elements.audio.value;const credit=document.querySelector('#audio-credit');if(mode==='off'){credit.textContent='Silent.';return;}credit.textContent='Preparing local sound…';startSound({...config,audio:mode,volume:Number(form.elements.volume.value)});});
 document.querySelector('#pick-track').addEventListener('click',async()=>{try{if(await api.chooseTrack()){config.track=true;document.querySelector('#track-status').textContent='Local track selected.';form.elements.audio.value='file';}}catch(e){document.querySelector('#track-status').textContent='Unable to select audio file.';}});
-form.addEventListener('submit',async e=>{e.preventDefault();const f=form.elements,next={...config};for(const k of ['name','seconds','audio','volume','region','model'])next[k]=f[k].value;for(const k of ['news','ai','fullscreen'])next[k]=f[k].checked;next.feeds=Array.from(form.querySelectorAll('[name=feed]:checked')).map(i=>i.value);
+form.addEventListener('submit',async e=>{e.preventDefault();const f=form.elements,next={...config};for(const k of ['name','seconds','audio','volume','region','model'])next[k]=f[k].value;for(const k of ['news','ai','fullscreen','showCommentary'])next[k]=f[k].checked;next.feeds=Array.from(form.querySelectorAll('[name=feed]:checked')).map(i=>i.value);
   try{if(f.esvKey.value.trim()){await api.saveEsvKey(f.esvKey.value);next.hasEsvKey=true;versePromise=api.scripture(session.ritual.reference);f.esvKey.value='';}await api.save(next);config=next;briefingPromise=null;previewing=false;stopSound();if(config.audio!=='off')await startSound();dialog.close();render();}
   catch{document.querySelector('#settings-error').textContent='Preferences could not be saved.';}
 });
