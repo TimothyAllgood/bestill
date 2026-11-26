@@ -157,7 +157,7 @@ function createWindow(){
   ritual=C.makeRitual(Math.random,config.readingMode,config.visualMode,config.ritualMode,new Date(),config.literature);resetBriefing();
   const links=resources(ritual.reference);
   approvedLinks=new Set([...Object.keys(catalog).flatMap(id=>{const x=getRecording(id);return [x.source,x.licenseUrl];}),...links.videos.map(v=>v.url),links.passageVideo?.url,links.collection,ritual.inspiration?.source,ritual.wonder?.source,links.net,links.tgc,links.bibleProject,commentary(ritual.reference)?.source,ritual.study,C.esvLink(ritual.reference),C.esvLink(ritual.context),...ritual.related.map(C.esvLink),'https://www.weather.gov/','https://api.esv.org/']);
-  win=new BrowserWindow({title:'Be Still',fullscreen:smoke||config.fullscreen,width:1100,height:760,minWidth:420,minHeight:550,backgroundColor:'#111310',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true}});
+  win=new BrowserWindow({title:'Be Still',fullscreen:smoke||config.fullscreen,width:1100,height:760,minWidth:420,minHeight:550,backgroundColor:'#111310',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true,autoplayPolicy:'no-user-gesture-required'}});
   win.webContents.on('before-input-event',(event,input)=>{if(input.type==='keyDown'&&!input.isAutoRepeat&&(input.key==='F11'||(input.key==='Escape'&&win.isFullScreen()))){event.preventDefault();win.setFullScreen(input.key==='F11'?!win.isFullScreen():false);}});
   win.webContents.setWindowOpenHandler(()=>({action:'deny'}));
   win.webContents.on('will-navigate',e=>e.preventDefault());
