@@ -2,6 +2,7 @@
 const {chapters,shortReadings,shortReading,chapterReading}=require('./bible.cjs');
 const {entries:inspirations}=require('./inspiration.cjs');
 const {atmosphere}=require('./atmosphere.cjs');
+const extraPrompts=require('./expanded-prompts.cjs');
 const {themes,actions,wonders,resolveMode,includesNews}=require('./ritual-variants.cjs');
 const arrivals = [
   'You do not have to carry tomorrow today.',
@@ -286,6 +287,7 @@ const originalPassages = [
   ["Hebrews 12:1-2","Hebrews 12:1-3","https://www.bibleref.com/Hebrews/12/Hebrews-12-1.html",["Philippians 3:13-14","2 Timothy 4:7"]],
   ["1 Thessalonians 5:16-18","1 Thessalonians 5:12-24","https://www.bibleref.com/1-Thessalonians/5/1-Thessalonians-5-16.html",["Philippians 4:4-7","Colossians 3:17"]]
 ];
+prayers.push(...extraPrompts.prayers);gratitude.push(...extraPrompts.gratitude);
 const originalRefs=new Set(originalPassages.map(p=>p[0]));
 const passages=[...originalPassages,...shortReadings.filter(ref=>!originalRefs.has(ref)).map(shortReading)];
 function choose(items,random) { return items[Math.floor(random()*items.length)]; }

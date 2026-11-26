@@ -29,6 +29,7 @@ const actions=[
  'Ask a family member to tell you a story you have not heard.',
  'Give your attention to one ordinary thing you usually rush through.'
 ];
+actions.push(...require('./expanded-prompts.cjs').actions);
 const wonders=[
  {title:'The familiar face of the Moon',text:'The Moon turns on its axis in the same time it takes to orbit Earth. That is why nearly the same side always faces us.',source:'https://science.nasa.gov/moon/facts/',publisher:'NASA'},
  {title:'A ring made of ice',text:'Saturn’s rings are mostly water ice. The individual pieces range from tiny grains to chunks much larger than a person.',source:'https://science.nasa.gov/resource/saturns-rings-2/',publisher:'NASA'},

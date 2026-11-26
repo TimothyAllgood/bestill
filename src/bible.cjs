@@ -532,7 +532,7 @@ const additional={
   "Jude": "1:22-23",
   "Revelation": "3:8,5:13,7:16-17,14:13,22:20"
 };
-const shortReadings=[...new Set(books.flatMap(([book,,,,refs])=>[refs,additional[book]].filter(Boolean).join(',').split(',').map(ref=>book+' '+ref)))];
+const shortReadings=[...new Set([...require('./expanded-readings.cjs'),...books.flatMap(([book,,,,refs])=>[refs,additional[book]].filter(Boolean).join(',').split(',').map(ref=>book+' '+ref))])];
 function bookFor(ref){return typeof ref==='string'?books.find(b=>ref===b[0]||ref.startsWith(b[0]+' ')):undefined;}
 function chapterFor(ref){const book=bookFor(ref);if(!book)return null;const n=Number(ref.slice(book[0].length+1).split(':')[0]);return Number.isInteger(n)&&n>=1&&n<=book[1]?book[0]+' '+n:null;}
 function chapterReading(ref){return [ref,ref,null,[]];}

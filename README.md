@@ -93,3 +93,5 @@ Default random prefers your selected local music, otherwise gentle nature and do
 
 ### v0.12.1 — Scripture reading polish
 The ESV API's terminal short copyright is rendered separately in small type rather than inside the verse. Main ritual remains unnumbered; Context and Related verses request actual verse markers (including first verses) and render them as superscript. Study is centered and top-aligned with smaller headings and scrollable reading; long passages use book-like typography. Offline smoke exercises the actual renderer with clearly synthetic test-only text; no ESV API key required. Build BeStill-0.12.1-win-x64.exe.
+
+Expanded curated Scripture references (checked against pinned WEBU verse inventory, not live ESV), 80 new prayer prompts, 80 gratitude prompts, 50 actions, 12 visual palettes. Original six stages preserved.

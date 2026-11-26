@@ -85,3 +85,12 @@ main:has(.study){display:block;padding:clamp(22px,4vh,44px) clamp(18px,5vw,64px)
 .study .scripture-attribution{text-align:left;margin:12px 0 6px}.study .related-verse .context-text{margin-top:16px}
 .scripture-scene.long-reading .verse,.scripture-scene.chapter-scene .verse{font-size:clamp(19px,2.15vw,25px);line-height:1.85;max-width:66ch;white-space:pre-wrap}
 main:has(.scripture-scene.long-reading),main:has(.scripture-scene.chapter-scene){display:block}.scripture-scene.long-reading,.scripture-scene.chapter-scene{margin:0 auto}
+
+/* Subdued additional local CSS palettes. No photos or extra network dependencies. */
+body[data-atmosphere=mist]{--glow:30,42,39;--light:179,197,188;--ambient:#1b2421;--sage:#bdcdc3;--line:#323f39}
+body[data-atmosphere=lake]{--glow:24,40,43;--light:161,199,201;--ambient:#182427;--sage:#a9cdd0;--line:#2e3e40}
+body[data-atmosphere=cedar]{--glow:34,42,27;--light:186,199,159;--ambient:#20271b;--sage:#c5cda9;--line:#384330}
+body[data-atmosphere=horizon]{--glow:47,36,31;--light:211,181,158;--ambient:#282019;--sage:#d4bba5;--line:#41352d}
+body[data-atmosphere=slate]{--glow:30,35,45;--light:173,186,211;--ambient:#20242c;--sage:#b3bed4;--line:#353b48}
+body[data-atmosphere=moonlight]{--glow:30,33,39;--light:192,199,210;--ambient:#202329;--sage:#c0c7d2;--line:#3b414a}
+body[data-atmosphere=sand]{--glow:44,40,30;--light:205,194,160;--ambient:#29251b;--sage:#d0c4a3;--line:#3e392b}
