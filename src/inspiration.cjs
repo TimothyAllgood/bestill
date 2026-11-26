@@ -731,6 +731,83 @@ const entries=[
     "sourceBlob": "6e101c8f6288a5713122085f0afe96485840fa5a",
     "sourceEdition": "GITenberg/The-Pilgrim-s-Progress-by-John-Bunyan_39452/39452.txt",
     "verified": true
+  },
+  {
+    "text": "In every man there is a loneliness, an inner chamber of peculiar life into which God only can enter.",
+    "author": "George MacDonald",
+    "work": "Unspoken Sermons",
+    "source": "https://www.gutenberg.org/ebooks/9057",
+    "kind": "Christian reflection",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "84063e6d76dfadd9a439f4ac75d6cf2cb06c5470",
+    "sourceEdition": "GITenberg/Unspoken-Sermons-Series-I-II-and-III_9057/9057.txt",
+    "verified": true
+  },
+  {
+    "text": "To receive a child in the name of God is to receive God himself.",
+    "author": "George MacDonald",
+    "work": "Unspoken Sermons",
+    "source": "https://www.gutenberg.org/ebooks/9057",
+    "kind": "Christian reflection",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "84063e6d76dfadd9a439f4ac75d6cf2cb06c5470",
+    "sourceEdition": "GITenberg/Unspoken-Sermons-Series-I-II-and-III_9057/9057.txt",
+    "verified": true
+  },
+  {
+    "text": "Nothing is required of man that is not first in God.",
+    "author": "George MacDonald",
+    "work": "Unspoken Sermons",
+    "source": "https://www.gutenberg.org/ebooks/9057",
+    "kind": "Christian reflection",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "84063e6d76dfadd9a439f4ac75d6cf2cb06c5470",
+    "sourceEdition": "GITenberg/Unspoken-Sermons-Series-I-II-and-III_9057/9057.txt",
+    "verified": true
+  },
+  {
+    "text": "An absolutely new prospect is a great happiness, and I can still get this any afternoon.",
+    "author": "Henry David Thoreau",
+    "work": "Walking (1862)",
+    "source": "https://www.gutenberg.org/ebooks/1022",
+    "kind": "Nature",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "c8c469f0bb83adee614cbf1ac059c2d59075c873",
+    "sourceEdition": "GITenberg/Walking_1022/1022-0.txt",
+    "verified": true
+  },
+  {
+    "text": "Two or three hours’ walking will carry me to as strange a country as I expect ever to see.",
+    "author": "Henry David Thoreau",
+    "work": "Walking (1862)",
+    "source": "https://www.gutenberg.org/ebooks/1022",
+    "kind": "Nature",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "c8c469f0bb83adee614cbf1ac059c2d59075c873",
+    "sourceEdition": "GITenberg/Walking_1022/1022-0.txt",
+    "verified": true
+  },
+  {
+    "text": "in Wildness is the preservation of the World.",
+    "author": "Henry David Thoreau",
+    "work": "Walking (1862)",
+    "source": "https://www.gutenberg.org/ebooks/1022",
+    "kind": "Nature",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "c8c469f0bb83adee614cbf1ac059c2d59075c873",
+    "sourceEdition": "GITenberg/Walking_1022/1022-0.txt",
+    "verified": true
+  },
+  {
+    "text": "The sun rises every morning. I do not rise every morning; but the variation is due not to my activity, but to my inaction.",
+    "author": "G. K. Chesterton",
+    "work": "Orthodoxy (1908)",
+    "source": "https://www.gutenberg.org/ebooks/130",
+    "kind": "Christian reflection",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "ea796135b5987e7d15131cdcbf9567801c0c34c2",
+    "sourceEdition": "GITenberg/Orthodoxy_130/130.txt",
+    "verified": true
   }
 ];
 module.exports={entries};
