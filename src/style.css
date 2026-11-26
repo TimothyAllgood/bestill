@@ -28,3 +28,5 @@ body[data-scene="1"]::before{opacity:1}body[data-scene="2"]::before{opacity:.68}
 .closing-quote.long-quote{font-size:clamp(23px,3.2vw,38px);line-height:1.5}.closing-scene .eyebrow{margin-bottom:32px}.closing-work{max-width:62ch;margin:8px auto}.closing-sendoff{margin-top:28px}
 body[data-still=true]::after,body[data-still=true] .breath{animation:none}body[data-still=true]::before{opacity:.8;transition:none}body[data-still=true] .breath{opacity:.45}
 @media(prefers-reduced-motion:reduce){body::after,.breath{animation:none!important}body::before{transition:none!important}.scene{animation:none!important}}
+
+.wonder-note{max-width:560px;margin:28px auto 0;padding:16px 0;border-top:1px solid var(--line);text-align:center;color:var(--muted)}.wonder-note summary{font-size:13px;color:var(--sage)}.wonder-note h2{font:normal 23px var(--serif);margin:20px 0 6px;color:var(--ink)}.wonder-note p{font:normal 18px/1.6 var(--serif);color:var(--ink);margin:14px auto 8px}.action-note{margin-top:20px}

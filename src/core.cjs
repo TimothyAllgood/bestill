@@ -29,12 +29,12 @@ const FEEDS=[
   {id:'science-news',name:'Science News',url:'https://www.sciencenews.org/feed'},
   {id:'npr-economy',name:'NPR Economy',url:'https://feeds.npr.org/1017/rss.xml'}
 ];
-const DEFAULTS={sourceVersion:3,showCommentary:true,readingMode:'short',visualMode:'rotate',fullscreen:true,name:'',seconds:30,audio:'off',volume:20,model:'',news:true,ai:true,region:'',feeds:FEEDS.map(f=>f.id),lastBriefing:'',track:''};
+const DEFAULTS={sourceVersion:3,showCommentary:true,readingMode:'short',visualMode:'rotate',ritualMode:'morning',literature:'mixed',showWonder:true,showAction:true,fullscreen:true,name:'',seconds:30,audio:'off',volume:20,model:'',news:true,ai:true,region:'',feeds:FEEDS.map(f=>f.id),lastBriefing:'',track:''};
 function localDate(d=new Date()){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');}
 function safeUrl(value){try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password?u.href:null;}catch{return null;}}
 function clean(value,max=500){return typeof value==='string'?value.replace(/[\u0000-\u001f\u007f]/g,' ').trim().slice(0,max):'';}
 function settings(input={},old=DEFAULTS){
-  return {...old,sourceVersion:3,showCommentary:input.showCommentary!==false,readingMode:input.readingMode==='chapter'?'chapter':'short',visualMode:input.visualMode==='still'?'still':'rotate',fullscreen:input.fullscreen!==false,name:clean(input.name,60),seconds:[15,30,45,60].includes(Number(input.seconds))?Number(input.seconds):30,
+  return {...old,sourceVersion:3,showCommentary:input.showCommentary!==false,readingMode:input.readingMode==='chapter'?'chapter':'short',visualMode:input.visualMode==='still'?'still':'rotate',ritualMode:['morning','auto','difficult','grateful','quiet','evening'].includes(input.ritualMode)?input.ritualMode:'morning',literature:['mixed','christian','poetry'].includes(input.literature)?input.literature:'mixed',showWonder:input.showWonder!==false,showAction:input.showAction!==false,fullscreen:input.fullscreen!==false,name:clean(input.name,60),seconds:[15,30,45,60].includes(Number(input.seconds))?Number(input.seconds):30,
     audio:['off','ambient','file','hymns','amazing-grace','doxology','abide','morning-light','quiet-waters'].includes(input.audio)?input.audio:'off',volume:Math.max(0,Math.min(100,Number(input.volume)||0)),
     model:clean(input.model,200),news:input.news===true,ai:input.ai===true,
     region:/^[A-Z]{2}[CZ]\d{3}$/.test(input.region||'')?input.region:'',

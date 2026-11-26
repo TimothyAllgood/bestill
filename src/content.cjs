@@ -2,64 +2,65 @@
 const {chapters,shortReadings,shortReading,chapterReading}=require('./bible.cjs');
 const {entries:inspirations}=require('./inspiration.cjs');
 const {atmosphere}=require('./atmosphere.cjs');
+const {themes,actions,wonders,resolveMode,includesNews}=require('./ritual-variants.cjs');
 const arrivals = [
   'You do not have to carry tomorrow today.',
   'There is time to be still before the day begins.',
-  'You are here. Let this moment be enough.',
-  'Begin with gratitude, not with the things you cannot control.',
+  'Sit for a minute. Nothing needs your attention just yet.',
+  'Think of one thing you are glad to wake up to.',
   'The world can wait for a moment.',
   'You do not have to have every answer this morning.',
   'Let the first moments of today belong to God.',
   'There is more to life than what you accomplish today.',
-  'Make room for peace before making room for plans.',
-  'You can meet this day one moment at a time.',
+  'The plans can wait until after this.',
+  'You only have to get through today, not the whole week.',
   'Before you look outward, take a moment to look toward God.',
-  'Let today be a day of faithfulness, not fear.',
+  'Think about the people God has put in your life.',
   "Today does not need to be extraordinary to be worthwhile.",
-  "There is room for both uncertainty and hope.",
+  "Some things are unsettled. You can still enjoy breakfast.",
   "Begin with the life God has given you, not the life you fear losing.",
   "You can be present without having a plan for every possibility.",
   "There is no need to rush this moment.",
-  "Give yourself a little quiet before the noise of the day.",
+  "Enjoy a few minutes before the house gets busy.",
   "There are people to love and things to enjoy today.",
-  "Make space for what is lasting.",
-  "You are not required to solve the whole world this morning.",
+  "Remember what you would still care about if nobody were watching.",
+  "You don’t need to read the whole internet before breakfast.",
   "Set aside the hurry for a moment.",
   "There is time to notice what is good.",
-  "Meet the day with an open heart.",
+  "See what today brings.",
   "The morning is not a deadline.",
   "Take a moment to notice the light around you.",
-  "You have permission to begin quietly.",
-  "Let your attention return to the room you are in.",
-  "Make a little room for wonder.",
+  "Start slowly if you can.",
+  "Listen to the sounds in the room.",
+  "Look out the window for a minute.",
   "Begin today without comparing it to yesterday.",
   "There is nothing to prove in this moment.",
   "The next few minutes belong to neither work nor worry.",
   "Let the first thing you do today be to listen.",
-  "Receive the day rather than racing toward it.",
+  "There is no prize for rushing through the morning.",
   "The ordinary is worth noticing.",
   "Leave some space for the unexpected good.",
   "You can be attentive without being hurried.",
   "There is more to this day than its obligations.",
-  "Be here, before you try to be elsewhere.",
-  "Quiet is enough for now."
+  "Stay here for a while.",
+  "Enjoy the quiet."
 ];
 const prayers = [
-  'What uncertainty are you trying to carry alone?',
+  'What is weighing on you this morning? Tell God about it.',
   'Who in your life could use your prayers today?',
-  'Where do you need wisdom rather than certainty?',
+  'Is there a decision you could use God’s wisdom on?',
   'What is one fear you can bring honestly before God?',
   'Where could you show patience and kindness today?',
-  'What responsibility would you like to approach with faith?',
+  'Pray about something you are responsible for today.',
   'What do you need to ask forgiveness for?',
-  'What would it mean to trust God with the things outside your control?',
+  'Tell God about something you cannot change.',
   'Who could you serve without expecting anything in return?',
-  'Where do you need courage to do the next right thing?',
+  'Is there something right you have been putting off?',
   "Where do you need help being patient with someone today?",
   "What would you like to entrust to God before you begin work?",
   "Who is carrying a burden you could help lighten?",
   "What decision could you bring before God rather than rush?",
-  "Where could you ask for a generous heart?",
+  "Ask God to help you be generous with someone today.",
   "What joy can you thank God for today?",
   "Where do you need humility to listen well?",
   "What would you like to bring before God for your family?",
@@ -89,7 +90,7 @@ const prayers = [
   "Where could you ask for greater love of Scripture?",
   "What do you find beautiful about God's character?",
   "What prayer of thanksgiving have you been putting off?",
-  "Where are you tempted to compare your life with someone else's?",
+  "Whose life have you been comparing yours to?",
   "What disappointment do you want to speak honestly about with God?",
   "Who needs healing or comfort today?",
   "Where do you need courage to tell the truth with kindness?",
@@ -161,14 +162,14 @@ const prayers = [
 const gratitude = [
   'What do you have today that you once hoped for?',
   'Who makes your life richer just by being in it?',
-  'What ordinary comfort might you be overlooking?',
+  'What is something you use every day and would miss?',
   'What is one ability you are grateful to have?',
   'What small joy from yesterday deserves remembering?',
   'What part of creation brings you delight?',
   'What has someone done for you that you could thank them for?',
-  'What opportunity do you have to love someone today?',
-  'What is good in your life even while other things remain uncertain?',
-  'What is something you can enjoy without needing to achieve anything?',
+  'Who are you glad you get to spend time with?',
+  'What went right yesterday?',
+  'What do you like doing just for the fun of it?',
   "What small moment with someone you love stands out?",
   "What is something beautiful you can see or hear today?",
   "Who has taught you something worth carrying forward?",
@@ -218,7 +219,7 @@ const gratitude = [
   "Who is someone you are glad to have known?",
   "What small act of generosity have you witnessed?",
   "What do you enjoy that has nothing to do with being productive?",
-  "What is a moment of peace you have experienced recently?",
+  "When did you last have a really quiet moment?",
   "What would you miss about the season you are in?",
   "What is something you can share with someone else today?",
   "What is a favorite memory of being outdoors?",
@@ -227,32 +228,32 @@ const gratitude = [
 const endings = [
   'Love the people in front of you. Do the work before you.',
   'Be faithful in the small things today.',
-  'Carry gratitude with you. Leave room for joy.',
+  'Enjoy your day.',
   'You can take the next step without knowing the whole road.',
   'Go in peace. Make time for what matters.',
   "Be present with the people you love.",
   "Let your work be one part of a meaningful day.",
   "Make something good. Notice something beautiful.",
-  "Carry what matters. Set down what you cannot control.",
+  "Go spend time with the people you care about.",
   "Take the day as it comes, with faith and kindness.",
   "Make time for ordinary joys.",
   "Choose patience when the day feels hurried.",
   "Be attentive to the ordinary.",
-  "Let kindness be part of your work.",
+  "Be kind to the people you work with.",
   "Give the people you love your unhurried attention.",
   "Notice the beauty that is already here.",
-  "Make room for a little wonder.",
+  "Look out the window for a minute.",
   "Do not hurry past the life you are living.",
   "Live the day rather than measuring it.",
   "Keep your promises, and leave room for grace.",
   "Let what you do today be shaped by love.",
   "Do the next faithful thing.",
   "Make a little space for rest.",
-  "Be curious, be kind, be present.",
+  "Ask a good question today.",
   "Remember to enjoy what you have worked for.",
   "Listen well. Speak gently.",
   "Look for someone you can encourage.",
-  "Let today be a day of small, good things."
+  "Have a good day."
 ];
 // Reference, surrounding passage, human-written study URL, suggested related readings.
 // Related readings are editorial suggestions, not an exhaustive cross-reference system.
@@ -304,8 +305,13 @@ const reflections={
  'Isaiah 41:10':'Who is being addressed in the surrounding passage, and what does God promise them?',
  '2 Timothy 1:7':'How does the surrounding letter connect courage with faithfulness?'
 };
-function makeRitual(random=Math.random,mode='short',visualMode='rotate') {
-  const [reference,context,study,related]=mode==='chapter'?chapterReading(choose(chapters,random)):choose(passages,random);
-  return {arrival:choose(arrivals,random),prayer:choose(prayers,random),gratitude:choose(gratitude,random),ending:choose(endings,random),inspiration:choose(inspirations,random),atmosphere:atmosphere(random,visualMode),reference,context,study,related,reflection:reflections[reference]||'What does this passage reveal about God in its surrounding context?'};
+function makeRitual(random=Math.random,mode='short',visualMode='rotate',requested='morning',date=new Date(),literature='mixed') {
+  const experience=resolveMode(requested,date),theme=themes[experience];
+  const themed=theme?passages.filter(p=>theme.refs.includes(p[0])):[];
+  const pool=themed.length?themed:passages;
+  const [reference,context,study,related]=mode==='chapter'?chapterReading(choose(chapters,random)):choose(pool,random);
+  const literary= inspirations.filter(x=>literature==='christian'?x.kind==='Christian reflection'||['George Herbert','John Bunyan','Brother Lawrence','Augustine of Hippo','Thomas à Kempis','G. K. Chesterton'].includes(x.author):literature==='poetry'?x.kind==='Poetry':true);
+  const choosePrompt=(key,base)=>choose(theme?.[key]||base,random);
+  return {experience,newsAllowed:includesNews(experience),arrival:choosePrompt('arrival',arrivals),prayer:choosePrompt('prayer',prayers),gratitude:choosePrompt('gratitude',gratitude),ending:choosePrompt('ending',endings),inspiration:choose(literary.length?literary:inspirations,random),wonder:choose(wonders,random),action:choose(actions,random),atmosphere:visualMode==='still'?'woodland':experience==='evening'?'night':atmosphere(random,visualMode),reference,context,study,related,reflection:reflections[reference]||'What does this passage reveal about God in its surrounding context?'};
 }
 module.exports={makeRitual,passages,originalPassages,prayers,gratitude,arrivals,endings};
