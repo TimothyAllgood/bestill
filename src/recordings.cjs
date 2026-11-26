@@ -72,6 +72,24 @@ const catalog={
     "licenseUrl": "https://commons.wikimedia.org/wiki/File:Erik_Satie_-_gymnopedies_-_la_1_ere._lent_et_douloureux.ogg",
     "sha1": "96b2343c81047abd9723488d8540b5a2af688233",
     "bytes": 3696351
+  },
+  "recorded-nocturne": {
+    "title": "Chopin · Nocturne Op. 9 No. 2",
+    "file": "Chopin_Nocturne_No._2_in_E_Flat_Major,_Op._9.ogg",
+    "author": "Peter Johnston / Musopen",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sha1": "2c27d9180690551cb8c4e05a5b69a92026f6fff9",
+    "bytes": 2193822
+  },
+  "recorded-nocturne55": {
+    "title": "Chopin · Nocturne Op. 55 No. 1",
+    "file": "Chopin_-_Nocturne-op-55-no-1.ogg",
+    "author": "Luke Faulkner / Musopen",
+    "license": "CC0 1.0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sha1": "0ad99063b4d2cc36982d7b945a78740ccabd4335",
+    "bytes": 3648933
   }
 };
 function getRecording(id){if(!Object.hasOwn(catalog,id))return null;const x=catalog[id],h=createHash('md5').update(x.file).digest('hex');return {...x,id,source:'https://commons.wikimedia.org/wiki/File:'+x.file,url:'https://upload.wikimedia.org/wikipedia/commons/'+h[0]+'/'+h.slice(0,2)+'/'+encodeURIComponent(x.file)};}

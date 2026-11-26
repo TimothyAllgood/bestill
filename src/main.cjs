@@ -1,4 +1,4 @@
-const {app,BrowserWindow,ipcMain,shell,dialog,safeStorage,session:electronSession}=require('electron');
+const {app,BrowserWindow,WebContentsView,ipcMain,shell,dialog,safeStorage,session:electronSession}=require('electron');
 const fs=require('node:fs/promises');
 const path=require('node:path');
 const smoke=process.argv.includes('--smoke-test');
@@ -6,6 +6,9 @@ if(smoke)app.setPath('userData',require('node:fs').mkdtempSync(path.join(require
 const Parser=require('rss-parser');
 const C=require('./core.cjs');
 const {catalog,getRecording,validRecording}=require('./recordings.cjs');
+const AudioChoice=require('./audio-choice.js');
+const ReaderPolicy=require('./reader-policy.cjs');
+const {randomUUID}=require('node:crypto');
 const {commentary,resources}=require('./study.cjs');
 try{process.loadEnvFile(path.join(__dirname,'..','.env'));}catch(e){if(e.code!=='ENOENT')console.warn('Could not read local environment configuration.');}
 let config={...C.DEFAULTS},win,ritual,briefingPromise,briefingDate,writeQueue=Promise.resolve(),esvToken='',approvedLinks=new Set(),briefState=null,briefJob=null;
@@ -14,7 +17,7 @@ const settingsPath=()=>path.join(app.getPath('userData'),'settings.json');
 async function load(){
   try{const raw=JSON.parse(await fs.readFile(settingsPath(),'utf8'));config=C.settings({...C.DEFAULTS,...raw,feeds:C.migrateFeeds(raw)},C.DEFAULTS);
     config.lastBriefing=typeof raw.lastBriefing==='string'?raw.lastBriefing:'';
-    config.track=typeof raw.track==='string'?raw.track:'';config.library=Array.isArray(raw.library)?raw.library.filter(x=>typeof x==='string').slice(0,100):[];
+    config.audioExcluded=Array.isArray(raw.audioExcluded)?[...new Set(raw.audioExcluded.filter(x=>AudioChoice.known.includes(x)))]:[];config.track=typeof raw.track==='string'?raw.track:'';config.library=Array.isArray(raw.library)?raw.library.filter(x=>typeof x==='string').slice(0,100):[];
   }catch(e){if(e.code!=='ENOENT')console.warn('Could not read local settings.');}
 }
 function persist(){const snapshot=JSON.stringify(config,null,2);writeQueue=writeQueue.catch(()=>{}).then(async()=>{const file=settingsPath();await fs.mkdir(path.dirname(file),{recursive:true});await fs.writeFile(file+'.tmp',snapshot,{mode:0o600});await fs.rename(file+'.tmp',file);});return writeQueue;}
@@ -124,8 +127,17 @@ async function installRecording(id){const meta=getRecording(id);if(!meta||smoke)
 const audioTypes={'.mp3':'audio/mpeg','.wav':'audio/wav','.ogg':'audio/ogg','.m4a':'audio/mp4','.flac':'audio/flac'};
 async function readPersonal(file){if(!file)return null;try{const mime=audioTypes[path.extname(file).toLowerCase()],stat=await fs.stat(file);if(!mime||!stat.isFile()||stat.size>50*1024*1024)return null;return {mime,bytes:await fs.readFile(file),title:path.basename(file),credit:'Your local audio'};}catch{return null;}}
 async function audioInventory(){const installed=(await Promise.all(Object.keys(catalog).map(async id=>{try{return (await fs.stat(audioPath(id))).size===catalog[id].bytes?id:null;}catch{return null;}}))).filter(Boolean);return {installed,localCount:config.library.length};}
+let reader=null;
+function readerEvent(state){if(win&&!win.isDestroyed())win.webContents.send('reader-state',state);}
+function sizeReader(){if(!reader||!win||win.isDestroyed())return;const {width,height}=win.getContentBounds();reader.view.setBounds({x:0,y:72,width,height:Math.max(0,height-72)});}
+function closeReader(notify=true){const old=reader;reader=null;if(old){if(win&&!win.isDestroyed())try{win.contentView.removeChildView(old.view);}catch{}if(!old.view.webContents.isDestroyed())old.view.webContents.close({waitForBeforeUnload:false});old.session.webRequest.onBeforeRequest(null);old.session.clearStorageData().catch(()=>{});old.session.clearCache().catch(()=>{});}if(notify)readerEvent({state:'closed'});}
+function openReader(url){const safe=C.safeUrl(url);if(!win||!safe||!ReaderPolicy.canOpen(safe,approvedLinks))return false;closeReader(false);const partition='bestill-reader-'+randomUUID(),ses=electronSession.fromPartition(partition,{cache:false});ses.setPermissionRequestHandler((_wc,_p,cb)=>cb(false));ses.setPermissionCheckHandler(()=>false);ses.on('will-download',event=>event.preventDefault());ses.webRequest.onBeforeRequest((details,callback)=>callback({cancel:!ReaderPolicy.allowRequest(safe,details.url,details.resourceType)}));const view=new WebContentsView({webPreferences:{session:ses,sandbox:true,contextIsolation:true,nodeIntegration:false,nodeIntegrationInSubFrames:false,webSecurity:true,allowRunningInsecureContent:false,webviewTag:false}}),wc=view.webContents;reader={view,session:ses,url:safe};win.contentView.addChildView(view);sizeReader();wc.setWindowOpenHandler(()=>({action:'deny'}));const guard=(event,url)=>{const target=typeof event.url==='string'?event.url:url;if(!ReaderPolicy.allowRequest(safe,target,'mainFrame'))event.preventDefault();};wc.on('will-navigate',guard);wc.on('will-redirect',(event,url,_same,isMainFrame)=>{if((event.isMainFrame??isMainFrame)!==false)guard(event,url);});wc.on('before-input-event',(event,input)=>{if(input.type==='keyDown'&&input.key==='Escape'){event.preventDefault();closeReader();}});const fail=()=>{if(reader?.view!==view)return;closeReader(false);readerEvent({state:'error'});};wc.on('render-process-gone',fail);wc.on('did-fail-load',(_event,code,_desc,_url,main)=>{if(main&&code!==-3)fail();});wc.on('did-finish-load',()=>{if(reader?.view===view)readerEvent({state:'ready'});});wc.loadURL(smoke?'about:blank':safe).catch(fail);return true;}
 function register(){
+  bind('reader-open',openReader);
+  bind('reader-close',()=>closeReader());
   bind('audio-inventory',audioInventory);
+  bind('exclude-sound',async id=>{if(typeof id!=='string')return null;if(AudioChoice.known.includes(id))config.audioExcluded=[...new Set([...config.audioExcluded,id])];else if(/^local:\d{1,3}$/.test(id)){const i=Number(id.slice(6));if(i<config.library.length)config.library.splice(i,1);}else return null;await persist();return {excluded:config.audioExcluded,localCount:config.library.length};});
+  bind('reset-exclusions',async()=>{config.audioExcluded=[];await persist();return [];});
   bind('library-track',index=>Number.isInteger(index)&&index>=0&&index<config.library.length?readPersonal(config.library[index]):null);
   bind('choose-library',async()=>{const selected=await dialog.showOpenDialog(win,{properties:['openFile','multiSelections'],filters:[{name:'Audio',extensions:['mp3','wav','ogg','m4a','flac']}]});if(selected.canceled)return config.library.length;const candidates=await Promise.all(selected.filePaths.slice(0,100).map(async file=>{try{const st=await fs.stat(file);return st.isFile()&&st.size<=50*1024*1024&&audioTypes[path.extname(file).toLowerCase()]?file:null;}catch{return null;}}));config.library=[...new Set([...config.library,...candidates.filter(Boolean)])].slice(0,100);await persist();return config.library.length;});
   bind('clear-library',async()=>{config.library=[];await persist();return 0;});
@@ -158,11 +170,11 @@ function createWindow(){
   const links=resources(ritual.reference);
   approvedLinks=new Set([...Object.keys(catalog).flatMap(id=>{const x=getRecording(id);return [x.source,x.licenseUrl];}),...links.videos.map(v=>v.url),links.passageVideo?.url,links.collection,ritual.inspiration?.source,ritual.wonder?.source,links.net,links.tgc,links.bibleProject,commentary(ritual.reference)?.source,ritual.study,C.esvLink(ritual.reference),C.esvLink(ritual.context),...ritual.related.map(C.esvLink),'https://www.weather.gov/','https://api.esv.org/']);
   win=new BrowserWindow({title:'Be Still',fullscreen:smoke||config.fullscreen,width:1100,height:760,minWidth:420,minHeight:550,backgroundColor:'#111310',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true,autoplayPolicy:'no-user-gesture-required'}});
-  win.webContents.on('before-input-event',(event,input)=>{if(input.type==='keyDown'&&!input.isAutoRepeat&&(input.key==='F11'||(input.key==='Escape'&&win.isFullScreen()))){event.preventDefault();win.setFullScreen(input.key==='F11'?!win.isFullScreen():false);}});
+  win.webContents.on('before-input-event',(event,input)=>{if(input.type==='keyDown'&&input.key==='Escape'&&reader){event.preventDefault();closeReader();return;}if(input.type==='keyDown'&&!input.isAutoRepeat&&(input.key==='F11'||(input.key==='Escape'&&win.isFullScreen()))){event.preventDefault();win.setFullScreen(input.key==='F11'?!win.isFullScreen():false);}});
   win.webContents.setWindowOpenHandler(()=>({action:'deny'}));
   win.webContents.on('will-navigate',e=>e.preventDefault());
   win.loadFile(path.join(__dirname,'index.html'));
-  win.on('closed',()=>{resetBriefing();win=null;});
+  win.on('resize',sizeReader);win.on('close',()=>closeReader(false));win.on('closed',()=>{resetBriefing();win=null;});
 }
 if(!app.requestSingleInstanceLock())app.quit();
 else {
