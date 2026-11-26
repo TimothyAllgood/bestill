@@ -14,7 +14,7 @@ const settingsPath=()=>path.join(app.getPath('userData'),'settings.json');
 async function load(){
   try{const raw=JSON.parse(await fs.readFile(settingsPath(),'utf8'));config=C.settings({...C.DEFAULTS,...raw,feeds:C.migrateFeeds(raw)},C.DEFAULTS);
     config.lastBriefing=typeof raw.lastBriefing==='string'?raw.lastBriefing:'';
-    config.track=typeof raw.track==='string'?raw.track:'';
+    config.track=typeof raw.track==='string'?raw.track:'';config.library=Array.isArray(raw.library)?raw.library.filter(x=>typeof x==='string').slice(0,100):[];
   }catch(e){if(e.code!=='ENOENT')console.warn('Could not read local settings.');}
 }
 function persist(){const snapshot=JSON.stringify(config,null,2);writeQueue=writeQueue.catch(()=>{}).then(async()=>{const file=settingsPath();await fs.mkdir(path.dirname(file),{recursive:true});await fs.writeFile(file+'.tmp',snapshot,{mode:0o600});await fs.rename(file+'.tmp',file);});return writeQueue;}
@@ -121,10 +121,17 @@ function newsPreferences(c){return JSON.stringify([c.news,c.ai,c.model,c.region,
 const audioPath=id=>path.join(app.getPath('userData'),'recordings',id+'.ogg');
 async function localRecording(id){const meta=getRecording(id);if(!meta)return null;try{const file=audioPath(id);if((await fs.stat(file)).size!==meta.bytes)return null;const bytes=await fs.readFile(file);return validRecording(id,bytes)?{mime:'audio/ogg',bytes,title:meta.title,credit:meta.author+' · '+meta.license}:null;}catch{return null;}}
 async function installRecording(id){const meta=getRecording(id);if(!meta||smoke)return false;if(await localRecording(id))return true;const res=await request(meta.url,{headers:{'User-Agent':'BeStill/0.9 (personal desktop app; github.com/TimothyAllgood/bestill)'}},60000);const reader=res.body.getReader(),parts=[];let count=0;try{while(true){const {done,value}=await reader.read();if(done)break;count+=value.byteLength;if(count>meta.bytes)throw new Error('Unexpected file size');parts.push(Buffer.from(value));}}finally{await reader.cancel().catch(()=>{});}const bytes=Buffer.concat(parts);if(!validRecording(id,bytes))throw new Error('Recording failed integrity check');const file=audioPath(id);await fs.mkdir(path.dirname(file),{recursive:true});await fs.writeFile(file,bytes,{mode:0o600});return true;}
+const audioTypes={'.mp3':'audio/mpeg','.wav':'audio/wav','.ogg':'audio/ogg','.m4a':'audio/mp4','.flac':'audio/flac'};
+async function readPersonal(file){if(!file)return null;try{const mime=audioTypes[path.extname(file).toLowerCase()],stat=await fs.stat(file);if(!mime||!stat.isFile()||stat.size>50*1024*1024)return null;return {mime,bytes:await fs.readFile(file),title:path.basename(file),credit:'Your local audio'};}catch{return null;}}
+async function audioInventory(){const installed=(await Promise.all(Object.keys(catalog).map(async id=>{try{return (await fs.stat(audioPath(id))).size===catalog[id].bytes?id:null;}catch{return null;}}))).filter(Boolean);return {installed,localCount:config.library.length};}
 function register(){
+  bind('audio-inventory',audioInventory);
+  bind('library-track',index=>Number.isInteger(index)&&index>=0&&index<config.library.length?readPersonal(config.library[index]):null);
+  bind('choose-library',async()=>{const selected=await dialog.showOpenDialog(win,{properties:['openFile','multiSelections'],filters:[{name:'Audio',extensions:['mp3','wav','ogg','m4a','flac']}]});if(selected.canceled)return config.library.length;const candidates=await Promise.all(selected.filePaths.slice(0,100).map(async file=>{try{const st=await fs.stat(file);return st.isFile()&&st.size<=50*1024*1024&&audioTypes[path.extname(file).toLowerCase()]?file:null;}catch{return null;}}));config.library=[...new Set([...config.library,...candidates.filter(Boolean)])].slice(0,100);await persist();return config.library.length;});
+  bind('clear-library',async()=>{config.library=[];await persist();return 0;});
   bind('recording',localRecording);
   bind('install-recording',installRecording);
-  bind('session',()=>{void getBriefing();return {smoke,ritual:{...ritual,resources:resources(ritual.reference),hasCommentary:!!commentary(ritual.reference)},recordings:Object.keys(catalog).map(id=>{const {title,author,license,licenseUrl,source,bytes}=getRecording(id);return {id,title,author,license,licenseUrl,source,bytes};}),config:{...config,track:!!config.track,hasEsvKey:!!(esvToken||process.env.ESV_API_KEY)},today:C.localDate(),feeds:C.FEEDS};});
+  bind('session',()=>{void getBriefing();return {smoke,ritual:{...ritual,resources:resources(ritual.reference),hasCommentary:!!commentary(ritual.reference)},recordings:Object.keys(catalog).map(id=>{const {title,author,license,licenseUrl,source,bytes}=getRecording(id);return {id,title,author,license,licenseUrl,source,bytes};}),config:{...config,track:!!config.track,library:config.library.length,hasEsvKey:!!(esvToken||process.env.ESV_API_KEY)},today:C.localDate(),feeds:C.FEEDS};});
   bind('scripture',scripture);
   bind('commentary',ref=>ref===ritual.reference?commentary(ref):null);
   bind('esv-key',saveToken);
@@ -142,11 +149,7 @@ function register(){
     if(stat.size>50*1024*1024)throw new Error('Choose a track smaller than 50 MB.');
     config.track=file;await persist();return true;
   });
-  bind('track',async()=>{if(!config.track)return null;try{
-    const ext=path.extname(config.track).toLowerCase(),mime={'.mp3':'audio/mpeg','.wav':'audio/wav','.ogg':'audio/ogg','.m4a':'audio/mp4','.flac':'audio/flac'}[ext];
-    if(!mime||(await fs.stat(config.track)).size>50*1024*1024)return null;
-    return {mime,bytes:await fs.readFile(config.track)};
-  }catch{return null;}});
+  bind('track',()=>readPersonal(config.track));
   bind('open-link',url=>{const safe=C.safeUrl(url);if(safe&&approvedLinks.has(safe)){if(win?.isFullScreen())win.setFullScreen(false);return shell.openExternal(safe);}});
   bind('finish',()=>win?.close());
 }

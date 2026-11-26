@@ -36,6 +36,42 @@ const catalog={
     "licenseUrl": "https://commons.wikimedia.org/wiki/File:Forest_lawn_creek.ogg",
     "sha1": "1fe5871f63cd7737d992d1afaee348f9504facba",
     "bytes": 19189608
+  },
+  "recorded-eventide": {
+    "title": "Abide with Me · solo organ",
+    "file": "Eventide.ogg",
+    "author": "The Uninvited Co., Inc.",
+    "license": "CC BY-SA 2.5",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5/",
+    "sha1": "45ab70939b07579384a1ab72274bc73d3a05eb4b",
+    "bytes": 972515
+  },
+  "recorded-birdsong": {
+    "title": "Morning birdsong · 7 minutes",
+    "file": "Birdsong_morning_01.ogg",
+    "author": "Martin Thurnherr",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "sha1": "2de25a648adb37560eb45c4a86c7ba8a65e509a0",
+    "bytes": 4544824
+  },
+  "recorded-dawn": {
+    "title": "Dorset dawn chorus · 50 minutes",
+    "file": "Dawnchorus-uk.ogg",
+    "author": "Silas S. Brown",
+    "license": "Public domain (creator dedication)",
+    "licenseUrl": "https://commons.wikimedia.org/wiki/File:Dawnchorus-uk.ogg",
+    "sha1": "07b58fc469c4faee4a27eb7d9770d75c9bed8d1c",
+    "bytes": 19394381
+  },
+  "recorded-satie": {
+    "title": "Gymnopédie No. 1 · acoustic piano",
+    "file": "Erik_Satie_-_gymnopedies_-_la_1_ere._lent_et_douloureux.ogg",
+    "author": "Robin Alciatore / Musopen",
+    "license": "Public domain (creator dedication)",
+    "licenseUrl": "https://commons.wikimedia.org/wiki/File:Erik_Satie_-_gymnopedies_-_la_1_ere._lent_et_douloureux.ogg",
+    "sha1": "96b2343c81047abd9723488d8540b5a2af688233",
+    "bytes": 3696351
   }
 };
 function getRecording(id){if(!Object.hasOwn(catalog,id))return null;const x=catalog[id],h=createHash('md5').update(x.file).digest('hex');return {...x,id,source:'https://commons.wikimedia.org/wiki/File:'+x.file,url:'https://upload.wikimedia.org/wikipedia/commons/'+h[0]+'/'+h.slice(0,2)+'/'+encodeURIComponent(x.file)};}
