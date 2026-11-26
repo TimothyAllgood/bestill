@@ -42,7 +42,7 @@ function samples(id,rate=22050,seconds=32,seed=2026){
  }
  return channels;
 }
-function render(ctx,id,seed=2026){const data=samples(id,Math.min(22050,ctx.sampleRate),32,seed),buffer=ctx.createBuffer(2,data[0].length,Math.min(22050,ctx.sampleRate));for(let i=0;i<2;i++)buffer.copyToChannel(data[i],i);return buffer;}
+function render(ctx,id,seed=2026){const data=samples(id,Math.min(22050,ctx.sampleRate),56,seed),buffer=ctx.createBuffer(2,data[0].length,Math.min(22050,ctx.sampleRate));for(let i=0;i<2;i++)buffer.copyToChannel(data[i],i);return buffer;}
 const api={SCAPES,samples,render};
 if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.BeStillSoundscapes=api;
 })(typeof window!=='undefined'?window:globalThis);
