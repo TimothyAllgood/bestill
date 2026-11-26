@@ -68,3 +68,6 @@ body[data-still=true] .arrival-scene .breath{animation:none}
 
 /* A source viewer, not a browser dashboard. Trusted controls remain outside the remote view. */
 #reader-bar{position:fixed;inset:0 0 auto;height:72px;display:flex;align-items:center;gap:14px;padding:12px clamp(12px,3vw,36px);background:#141914;z-index:20;border-bottom:1px solid var(--line)}#reader-host{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;color:var(--muted)}#reader-bar button{white-space:nowrap;font-size:13px;padding:9px 12px;min-width:0}#reader-status{position:fixed;inset:72px 0 0;display:grid;place-items:center;text-align:center;padding:30px;background:#111310;color:var(--muted);z-index:19}body[data-reader=true] header,body[data-reader=true] footer,body[data-reader=true] main{visibility:hidden}#exclude-sound{font-size:11px;opacity:.8}@media(max-width:550px){#reader-bar{gap:6px}#reader-bar button{font-size:11px;padding:7px}#reader-host{font-size:10px}}
+
+/* Keep the source link secondary to Scripture and the primary action. */
+.scripture-scene .actions .quiet{font-size:12px;padding:10px 12px}.scripture-scene .actions{align-items:center}

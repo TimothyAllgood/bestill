@@ -39,7 +39,8 @@ async function scripture(ref){
     const data=await (await request(url,{headers:{Authorization:'Token '+key}})).json();
     const text=Array.isArray(data.passages)?data.passages.join('\n').trim():'';
     if(!text)return {link,text:null,notice:'Passage unavailable. Open the original at Crossway.'};
-    return {link,text,notice:'Scripture quotations are from the ESV® Bible (The Holy Bible, English Standard Version®), © 2001 by Crossway, a publishing ministry of Good News Publishers. Used by permission. All rights reserved.'};
+    // Keep the API's original short copyright notice with the passage. Full attribution is in Settings.
+    return {link,text,notice:''};
   }catch{return {link,text:null,notice:'ESV could not be loaded. Open the original at Crossway when connected.'};}
 }
 async function models(){
