@@ -6,6 +6,7 @@ if(smoke)app.setPath('userData',require('node:fs').mkdtempSync(path.join(require
 const Parser=require('rss-parser');
 const C=require('./core.cjs');
 const {passageParams,formatPassage}=require('./scripture-format.cjs');
+const Offline=require('./offline-bible.cjs');
 const {catalog,getRecording,validRecording}=require('./recordings.cjs');
 const AudioChoice=require('./audio-choice.js');
 const ReaderPolicy=require('./reader-policy.cjs');
@@ -17,6 +18,7 @@ const tokenPath=()=>path.join(app.getPath('userData'),'esv-token.enc');
 const settingsPath=()=>path.join(app.getPath('userData'),'settings.json');
 async function load(){
   try{const raw=JSON.parse(await fs.readFile(settingsPath(),'utf8'));config=C.settings({...C.DEFAULTS,...raw,feeds:C.migrateFeeds(raw)},C.DEFAULTS);
+    config.recentReadings=Array.isArray(raw.recentReadings)?raw.recentReadings.filter(C.allowedPassage).slice(-30):[];config.recentLiterature=Array.isArray(raw.recentLiterature)?raw.recentLiterature.filter(x=>typeof x==='string'&&x.length<=2000).slice(-30):[];if(!config.avoidRecent){config.recentReadings=[];config.recentLiterature=[];}
     config.lastBriefing=typeof raw.lastBriefing==='string'?raw.lastBriefing:'';
     config.audioExcluded=Array.isArray(raw.audioExcluded)?[...new Set(raw.audioExcluded.filter(x=>AudioChoice.known.includes(x)))]:[];config.track=typeof raw.track==='string'?raw.track:'';config.library=Array.isArray(raw.library)?raw.library.filter(x=>typeof x==='string').slice(0,100):[];
   }catch(e){if(e.code!=='ENOENT')console.warn('Could not read local settings.');}
@@ -34,15 +36,16 @@ async function scripture(ref,numbered=false){
   const link=C.esvLink(ref),key=smoke?'':esvToken||process.env.ESV_API_KEY?.trim();
   approvedLinks.add(link);
   if(smoke)return {link,...formatPassage([numbered===true?'[1] Offline test fixture.\n[2] Second test line. (ESV)':'Offline test fixture. (ESV)'],numbered===true),notice:''};
-  if(!key)return {link,text:null,notice:'Read the ESV at Crossway, or configure your free personal API token in Settings.'};
+  const fallback=()=>{if(!config.offlineBible)return null;const result=Offline.read(Offline.load(),ref,numbered===true);if(result)approvedLinks.add(result.link);return result;};
+  if(!key)return fallback()||{link,text:null,notice:'Read the ESV at Crossway, or configure your free personal API token in Settings.'};
   try{
     const url=new URL('https://api.esv.org/v3/passage/text/');
     for(const [k,v] of Object.entries(passageParams(ref,numbered===true)))url.searchParams.set(k,v);
     const data=await (await request(url,{headers:{Authorization:'Token '+key}})).json();
     const formatted=formatPassage(data.passages,numbered===true);
-    if(!formatted.text)return {link,text:null,notice:'Passage unavailable. Open the original at Crossway.'};
+    if(!formatted.text)return fallback()||{link,text:null,notice:'Passage unavailable. Open the original at Crossway.'};
     return {link,...formatted,notice:''};
-  }catch{return {link,text:null,notice:'ESV could not be loaded. Open the original at Crossway when connected.'};}
+  }catch{return fallback()||{link,text:null,notice:'ESV could not be loaded. Open the original at Crossway when connected.'};}
 }
 async function models(){
   if(smoke)return [];
@@ -145,14 +148,15 @@ function register(){
   bind('clear-library',async()=>{config.library=[];await persist();return 0;});
   bind('recording',localRecording);
   bind('install-recording',installRecording);
-  bind('session',()=>{void getBriefing();return {smoke,ritual:{...ritual,resources:resources(ritual.reference),hasCommentary:!!commentary(ritual.reference)},recordings:Object.keys(catalog).map(id=>{const {title,author,license,licenseUrl,source,bytes}=getRecording(id);return {id,title,author,license,licenseUrl,source,bytes};}),config:{...config,track:!!config.track,library:config.library.length,hasEsvKey:!!(esvToken||process.env.ESV_API_KEY)},today:C.localDate(),feeds:C.FEEDS};});
+  bind('session',()=>{void getBriefing();return {smoke,ritual:ritualPayload(),recordings:Object.keys(catalog).map(id=>{const {title,author,license,licenseUrl,source,bytes}=getRecording(id);return {id,title,author,license,licenseUrl,source,bytes};}),config:{...config,track:!!config.track,library:config.library.length,hasEsvKey:!!(esvToken||process.env.ESV_API_KEY)},today:C.localDate(),feeds:C.FEEDS};});
+  bind('reroll',kind=>{if(!['scripture','literature'].includes(kind))return null;const next=C.makeRitual(Math.random,config.readingMode,config.visualMode,config.ritualMode,new Date(),config.literature,{references:[...(config.avoidRecent?config.recentReadings:[]),ritual.reference],literature:[...(config.avoidRecent?config.recentLiterature:[]),ritual.inspiration.text]});if(kind==='scripture'){for(const k of ['reference','context','study','related','reflection'])ritual[k]=next[k];}else ritual.inspiration=next.inspiration;rememberRitual();approveRitual();return ritualPayload();});
   bind('scripture',scripture);
   bind('commentary',ref=>ref===ritual.reference?commentary(ref):null);
   bind('esv-key',saveToken);
   bind('fullscreen',()=>{if(win)win.setFullScreen(!win.isFullScreen());});
   bind('smoke-ready',ok=>{if(smoke)app.exit(ok===true&&win?.isFullScreen()&&win.webContents.getLastWebPreferences().sandbox?0:1);});
   bind('models',models);
-  bind('settings',async(input)=>{const before=newsPreferences(config);config=C.settings(input,config);await persist();if(before!==newsPreferences(config)){resetBriefing();void getBriefing();}return true;});
+  bind('settings',async(input)=>{const before=newsPreferences(config);config=C.settings(input,config);if(!config.avoidRecent){config.recentReadings=[];config.recentLiterature=[];}await persist();if(before!==newsPreferences(config)){resetBriefing();void getBriefing();}return true;});
   bind('briefing',getBriefing);
   bind('briefing-status',()=>briefState||{skipped:true,reason:'not-started'});
   bind('briefing-seen',async()=>{if(briefingDate===C.localDate()&&C.canComplete(briefState)){config.lastBriefing=briefingDate;await persist();}});
@@ -167,10 +171,11 @@ function register(){
   bind('open-link',url=>{const safe=C.safeUrl(url);if(safe&&approvedLinks.has(safe)){if(win?.isFullScreen())win.setFullScreen(false);return shell.openExternal(safe);}});
   bind('finish',()=>win?.close());
 }
-function createWindow(){
-  ritual=C.makeRitual(Math.random,config.readingMode,config.visualMode,config.ritualMode,new Date(),config.literature);resetBriefing();
-  const links=resources(ritual.reference);
-  approvedLinks=new Set([...Object.keys(catalog).flatMap(id=>{const x=getRecording(id);return [x.source,x.licenseUrl];}),...links.videos.map(v=>v.url),links.passageVideo?.url,links.collection,ritual.inspiration?.source,ritual.wonder?.source,links.net,links.tgc,links.bibleProject,commentary(ritual.reference)?.source,ritual.study,C.esvLink(ritual.reference),C.esvLink(ritual.context),...ritual.related.map(C.esvLink),'https://www.weather.gov/','https://api.esv.org/']);
+function ritualPayload(){return {...ritual,resources:resources(ritual.reference),hasCommentary:!!commentary(ritual.reference)};}
+function freshRitual(){return C.makeRitual(Math.random,config.readingMode,config.visualMode,config.ritualMode,new Date(),config.literature,config.avoidRecent?{references:config.recentReadings,literature:config.recentLiterature}:{});}
+function rememberRitual(){if(!config.avoidRecent||smoke)return;config.recentReadings=[...config.recentReadings.filter(x=>x!==ritual.reference),ritual.reference].slice(-30);const key=ritual.inspiration.text;config.recentLiterature=[...config.recentLiterature.filter(x=>x!==key),key].slice(-30);void persist().catch(()=>{});}
+function approveRitual(){const links=resources(ritual.reference);for(const url of [...Object.keys(catalog).flatMap(id=>{const x=getRecording(id);return [x.source,x.licenseUrl];}),...links.videos.map(v=>v.url),links.passageVideo?.url,links.collection,ritual.inspiration?.source,ritual.wonder?.source,links.net,links.tgc,links.bibleProject,commentary(ritual.reference)?.source,ritual.study,C.esvLink(ritual.reference),C.esvLink(ritual.context),...ritual.related.map(C.esvLink),...links.more.map(x=>x.url),'https://www.weather.gov/','https://api.esv.org/','https://ebible.org/find/show.php?id=engwebu'])if(url)approvedLinks.add(url);}
+function createWindow(){ritual=freshRitual();rememberRitual();resetBriefing();approvedLinks=new Set();approveRitual();
   win=new BrowserWindow({title:'Be Still',fullscreen:smoke||config.fullscreen,width:1100,height:760,minWidth:420,minHeight:550,backgroundColor:'#111310',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true,autoplayPolicy:'no-user-gesture-required'}});
   win.webContents.on('before-input-event',(event,input)=>{if(input.type==='keyDown'&&input.key==='Escape'&&reader){event.preventDefault();closeReader();return;}if(input.type==='keyDown'&&!input.isAutoRepeat&&(input.key==='F11'||(input.key==='Escape'&&win.isFullScreen()))){event.preventDefault();win.setFullScreen(input.key==='F11'?!win.isFullScreen():false);}});
   win.webContents.setWindowOpenHandler(()=>({action:'deny'}));

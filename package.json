@@ -1,14 +1,15 @@
 {
   "name": "bestill",
-  "version": "0.12.1",
+  "version": "0.13.0",
   "private": true,
   "description": "A quiet local-first Christian morning ritual",
   "main": "src/main.cjs",
   "scripts": {
     "start": "electron .",
     "test": "node --test",
-    "check": "node --check src/main.cjs && node --check src/preload.cjs && node --check src/renderer.js && node --check src/core.cjs && node --check src/study.cjs && node --check src/music.js && node --check src/study/resources.cjs && node --check src/content.cjs && node --check src/bible.cjs && node --check src/inspiration.cjs && node --check src/atmosphere.cjs && node --check src/ritual-variants.cjs && node --check src/soundscapes.js && node --check src/recordings.cjs && node --check src/audio-choice.js && node --check src/audio-level.js && node --check src/reader-policy.cjs && node --check src/scripture-format.cjs",
-    "build:win": "electron-builder --win portable --x64 --publish never"
+    "check": "node --check src/main.cjs && node --check src/preload.cjs && node --check src/renderer.js && node --check src/core.cjs && node --check src/study.cjs && node --check src/music.js && node --check src/study/resources.cjs && node --check src/content.cjs && node --check src/bible.cjs && node --check src/inspiration.cjs && node --check src/atmosphere.cjs && node --check src/ritual-variants.cjs && node --check src/soundscapes.js && node --check src/recordings.cjs && node --check src/audio-choice.js && node --check src/audio-level.js && node --check src/reader-policy.cjs && node --check src/scripture-format.cjs && node --check src/offline-bible.cjs && node --check scripts/prepare-bible.cjs",
+    "build:win": "npm run prepare:bible && electron-builder --win portable --x64 --publish never",
+    "prepare:bible": "node scripts/prepare-bible.cjs"
   },
   "engines": {
     "node": ">=22"

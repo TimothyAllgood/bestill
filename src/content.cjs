@@ -307,13 +307,14 @@ const reflections={
  'Isaiah 41:10':'Who is being addressed in the surrounding passage, and what does God promise them?',
  '2 Timothy 1:7':'How does the surrounding letter connect courage with faithfulness?'
 };
-function makeRitual(random=Math.random,mode='short',visualMode='rotate',requested='morning',date=new Date(),literature='mixed') {
+function makeRitual(random=Math.random,mode='short',visualMode='rotate',requested='morning',date=new Date(),literature='mixed',history={}) {
   const experience=resolveMode(requested,date),theme=themes[experience];
   const themed=theme?passages.filter(p=>theme.refs.includes(p[0])):[];
   const pool=themed.length?themed:passages;
-  const [reference,context,study,related]=mode==='chapter'?chapterReading(choose(chapters,random)):choose(pool,random);
+  const exclude=(items,key,used)=>{const remaining=items.filter(x=>!used?.includes(key(x)));return remaining.length?remaining:items;};
+  const [reference,context,study,related]=mode==='chapter'?chapterReading(choose(exclude(chapters,x=>x,history.references),random)):choose(exclude(pool,p=>p[0],history.references),random);
   const literary= inspirations.filter(x=>literature==='christian'?x.kind==='Christian reflection'||['George Herbert','John Bunyan','Brother Lawrence','Augustine of Hippo','Thomas à Kempis','G. K. Chesterton'].includes(x.author):literature==='poetry'?x.kind==='Poetry':true);
   const choosePrompt=(key,base)=>choose(theme?.[key]||base,random);
-  return {experience,newsAllowed:includesNews(experience),arrival:choosePrompt('arrival',arrivals),prayer:choosePrompt('prayer',prayers),gratitude:choosePrompt('gratitude',gratitude),ending:choosePrompt('ending',endings),inspiration:choose(literary.length?literary:inspirations,random),wonder:choose(wonders,random),action:choose(actions,random),atmosphere:visualMode==='still'?'woodland':experience==='evening'?'night':atmosphere(random,visualMode,date),reference,context,study,related,reflection:reflections[reference]||'What does this passage reveal about God in its surrounding context?'};
+  return {experience,newsAllowed:includesNews(experience),arrival:choosePrompt('arrival',arrivals),prayer:choosePrompt('prayer',prayers),gratitude:choosePrompt('gratitude',gratitude),ending:choosePrompt('ending',endings),inspiration:choose(exclude(literary.length?literary:inspirations,x=>x.text,history.literature),random),wonder:choose(wonders,random),action:choose(actions,random),atmosphere:visualMode==='still'?'woodland':experience==='evening'?'night':atmosphere(random,visualMode,date),reference,context,study,related,reflection:reflections[reference]||'What does this passage reveal about God in its surrounding context?'};
 }
 module.exports={makeRitual,passages,originalPassages,prayers,gratitude,arrivals,endings};

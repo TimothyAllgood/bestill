@@ -94,3 +94,5 @@ body[data-atmosphere=horizon]{--glow:47,36,31;--light:211,181,158;--ambient:#282
 body[data-atmosphere=slate]{--glow:30,35,45;--light:173,186,211;--ambient:#20242c;--sage:#b3bed4;--line:#353b48}
 body[data-atmosphere=moonlight]{--glow:30,33,39;--light:192,199,210;--ambient:#202329;--sage:#c0c7d2;--line:#3b414a}
 body[data-atmosphere=sand]{--glow:44,40,30;--light:205,194,160;--ambient:#29251b;--sage:#d0c4a3;--line:#3e392b}
+
+body[data-reading-size=small] .scripture-scene .verse,body[data-reading-size=small] .study .context-text{font-size:clamp(17px,2.1vw,23px)}body[data-reading-size=large] .scripture-scene .verse,body[data-reading-size=large] .study .context-text{font-size:clamp(26px,3vw,36px)}.scripture-scene>.quiet,.closing-scene>.quiet:last-child{margin-top:12px;font-size:12px}
