@@ -1,4 +1,4 @@
-// Historical literary excerpts; new additions checked against source editions. Never generated at runtime.
+ // Historical literary excerpts; newly included poems checked against historical editions.
 const entries=[
   {
     "text": "Our life is frittered away by detail.",
@@ -807,6 +807,303 @@ const entries=[
     "license": "Public-domain historical text (US)",
     "sourceBlob": "ea796135b5987e7d15131cdcbf9567801c0c34c2",
     "sourceEdition": "GITenberg/Orthodoxy_130/130.txt",
+    "verified": true
+  },
+  {
+    "text": "It is very nice to think\nThe world is full of meat and drink\nWith little children saying grace\nIn every Christian kind of place.",
+    "author": "Robert Louis Stevenson",
+    "work": "A Child's Garden of Verses · A Thought",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/25608",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "d1e669f9991ede5228122f403d05ee5fb48adfff",
+    "sourceEdition": "GITenberg/A-Child-s-Garden-of-Verses_25608/25608.txt",
+    "verified": true
+  },
+  {
+    "text": "Up into the cherry tree\nWho should climb but little me?\nI held the trunk with both my hands\nAnd looked abroad on foreign lands.\n\nI saw the next door garden lie,\nAdorned with flowers, before my eye,\nAnd many pleasant places more\nThat I had never seen before.\n\nI saw the dimpling river pass\nAnd be the sky's blue looking-glass;\nThe dusty roads go up and down\nWith people tramping in to town.\n\nIf I could find a higher tree\nFarther and farther I should see,\nTo where the grown-up river slips\nInto the sea among the ships,\n\nTo where the roads on either hand\nLead onward into fairy land,\nWhere all the children dine at five,\nAnd all the playthings come alive.",
+    "author": "Robert Louis Stevenson",
+    "work": "A Child's Garden of Verses · Foreign Lands",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/25608",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "d1e669f9991ede5228122f403d05ee5fb48adfff",
+    "sourceEdition": "GITenberg/A-Child-s-Garden-of-Verses_25608/25608.txt",
+    "verified": true
+  },
+  {
+    "text": "Dark brown is the river,\n  Golden is the sand.\nIt flows along for ever,\n  With trees on either hand.\n\nGreen leaves a-floating,\n  Castles of the foam,\nBoats of mine a-boating--\n  Where will all come home?\n\nOn goes the river\n  And out past the mill,\nAway down the valley,\n  Away down the hill.\n\nAway down the river,\n  A hundred miles or more,\nOther little children\n  Shall bring my boats ashore.",
+    "author": "Robert Louis Stevenson",
+    "work": "A Child's Garden of Verses · Where Go The Boats?",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/25608",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "d1e669f9991ede5228122f403d05ee5fb48adfff",
+    "sourceEdition": "GITenberg/A-Child-s-Garden-of-Verses_25608/25608.txt",
+    "verified": true
+  },
+  {
+    "text": "The rain is raining all around,\nIt falls on field and tree,\nIt rains on the umbrellas here,\nAnd on the ships at sea.",
+    "author": "Robert Louis Stevenson",
+    "work": "A Child's Garden of Verses · Rain",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/25608",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "d1e669f9991ede5228122f403d05ee5fb48adfff",
+    "sourceEdition": "GITenberg/A-Child-s-Garden-of-Verses_25608/25608.txt",
+    "verified": true
+  },
+  {
+    "text": "Of speckled eggs the birdie sings\nAnd nests among the trees;\nThe sailor sings of ropes and things\nIn ships upon the seas.\n\nThe children sing in far Japan,\nThe children sing in Spain;\nThe organ with the organ man\nIs singing in the rain.",
+    "author": "Robert Louis Stevenson",
+    "work": "A Child's Garden of Verses · Singing",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/25608",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "d1e669f9991ede5228122f403d05ee5fb48adfff",
+    "sourceEdition": "GITenberg/A-Child-s-Garden-of-Verses_25608/25608.txt",
+    "verified": true
+  },
+  {
+    "text": "The friendly cow all red and white,\n  I love with all my heart:\nShe gives me cream with all her might,\n  To eat with apple-tart.\n\nShe wanders lowing here and there,\n  And yet she cannot stray,\nAll in the pleasant open air,\n  The pleasant light of day;\n\nAnd blown by all the winds that pass\n  And wet with all the showers,\nShe walks among the meadow grass\n  And eats the meadow flowers.",
+    "author": "Robert Louis Stevenson",
+    "work": "A Child's Garden of Verses · The Cow",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/25608",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "d1e669f9991ede5228122f403d05ee5fb48adfff",
+    "sourceEdition": "GITenberg/A-Child-s-Garden-of-Verses_25608/25608.txt",
+    "verified": true
+  },
+  {
+    "text": "The world is so full of a number of things,\nI'm sure we should all be as happy as kings.",
+    "author": "Robert Louis Stevenson",
+    "work": "A Child's Garden of Verses · Happy Thought",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/25608",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "d1e669f9991ede5228122f403d05ee5fb48adfff",
+    "sourceEdition": "GITenberg/A-Child-s-Garden-of-Verses_25608/25608.txt",
+    "verified": true
+  },
+  {
+    "text": "How do you like to go up in a swing,\n  Up in the air so blue?\nOh, I do think it the pleasantest thing\n  Ever a child can do!\n\nUp in the air and over the wall,\n  Till I can see so wide,\nRivers and trees and cattle and all\n  Over the countryside--\n\nTill I look down on the garden green,\n  Down on the roof so brown--\nUp in the air I go flying again,\n  Up in the air and down!",
+    "author": "Robert Louis Stevenson",
+    "work": "A Child's Garden of Verses · The Swing",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/25608",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "d1e669f9991ede5228122f403d05ee5fb48adfff",
+    "sourceEdition": "GITenberg/A-Child-s-Garden-of-Verses_25608/25608.txt",
+    "verified": true
+  },
+  {
+    "text": "A birdie with a yellow bill\nHopped upon the window sill,\nCocked his shining eye and said:\n\"Ain't you 'shamed, you sleepy-head!\"",
+    "author": "Robert Louis Stevenson",
+    "work": "A Child's Garden of Verses · Time To Rise",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/25608",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "d1e669f9991ede5228122f403d05ee5fb48adfff",
+    "sourceEdition": "GITenberg/A-Child-s-Garden-of-Verses_25608/25608.txt",
+    "verified": true
+  },
+  {
+    "text": "Smooth it slides upon its travel,\n  Here a wimple, there a gleam--\n    O the clean gravel!\n    O the smooth stream!\n\nSailing blossoms, silver fishes,\n  Paven pools as clear as air--\n    How a child wishes\n    To live down there!\n\nWe can see our colored faces\n  Floating on the shaken pool\n    Down in cool places,\n    Dim and very cool;\n\nTill a wind or water wrinkle,\n  Dipping marten, plumping trout,\n    Spreads in a twinkle\n    And blots all out.\n\nSee the rings pursue each other;\n  All below grows black as night,\n    Just as if mother\n    Had blown out the light!\n\nPatience, children, just a minute--\n  See the spreading circles die;\n    The stream and all in it\n    Will clear by-and-by.",
+    "author": "Robert Louis Stevenson",
+    "work": "A Child's Garden of Verses · Looking-glass River",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/25608",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "d1e669f9991ede5228122f403d05ee5fb48adfff",
+    "sourceEdition": "GITenberg/A-Child-s-Garden-of-Verses_25608/25608.txt",
+    "verified": true
+  },
+  {
+    "text": "In the other gardens\n  And all up the vale,\nFrom the autumn bonfires\n  See the smoke trail!\n\nPleasant summer over\n  And all the summer flowers,\nThe red fire blazes,\n  The gray smoke towers.\n\nSing a song of seasons!\n  Something bright in all!\nFlowers in the summer,\n  Fires in the fall!",
+    "author": "Robert Louis Stevenson",
+    "work": "A Child's Garden of Verses · Autumn Fires",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/25608",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "d1e669f9991ede5228122f403d05ee5fb48adfff",
+    "sourceEdition": "GITenberg/A-Child-s-Garden-of-Verses_25608/25608.txt",
+    "verified": true
+  },
+  {
+    "text": "Great is the sun and wide he goes\nThrough empty heaven without repose;\nAnd in the blue and glowing days\nMore thick than rain he showers his rays.\n\nThough closer still the blinds we pull\nTo keep the shady parlor cool,\nYet he will find a chink or two\nTo slip his golden fingers through.\n\nThe dusty attic spider-clad\nHe, through the key-hole, maketh glad;\nAnd through the broken edge of tiles,\nInto the laddered hay-loft smiles.\n\nMeantime his golden face around\nHe bares to all the garden ground,\nAnd sheds a warm and glittering look\nAmong the ivy's inmost nook.\n\nAbove the hills, along the blue,\nRound the bright air with footing true,\nTo please the child, to paint the rose,\nThe garden of the World, he goes.",
+    "author": "Robert Louis Stevenson",
+    "work": "A Child's Garden of Verses · Summer Sun",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/25608",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "d1e669f9991ede5228122f403d05ee5fb48adfff",
+    "sourceEdition": "GITenberg/A-Child-s-Garden-of-Verses_25608/25608.txt",
+    "verified": true
+  },
+  {
+    "text": "The moon has a face like the clock in the hall;\nShe shines on thieves on the garden wall,\nOn streets and fields and harbor quays,\nAnd birdies asleep in the forks of the trees.\n\nThe squalling cat and the squeaking mouse,\nThe howling dog by the door of the house,\nThe bat that lies in bed at noon,\nAll love to be out by the light of the moon.\n\nBut all of the things that belong to the day\nCuddle to sleep to be out of her way;\nAnd flowers and children close their eyes\nTill up in the morning the sun shall arise.",
+    "author": "Robert Louis Stevenson",
+    "work": "A Child's Garden of Verses · The Moon",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/25608",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "d1e669f9991ede5228122f403d05ee5fb48adfff",
+    "sourceEdition": "GITenberg/A-Child-s-Garden-of-Verses_25608/25608.txt",
+    "verified": true
+  },
+  {
+    "text": "All the names I know from nurse:\nGardener's garters, Shepherd's purse,\nBachelor's buttons, Lady's smock,\nAnd the Lady Hollyhock.\n\nFairy places, fairy things,\nFairy woods where the wild bee wings,\nTiny trees for tiny dames--\nThese must all be fairy names!\n\nTiny woods below whose boughs\nShady fairies weave a house;\nTiny tree-tops, rose or thyme,\nWhere the braver fairies climb!\n\nFair are grown-up people's trees,\nBut the fairest woods are these;\nWhere if I were not so tall,\nI should live for good and all.",
+    "author": "Robert Louis Stevenson",
+    "work": "A Child's Garden of Verses · The Flowers",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/25608",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "d1e669f9991ede5228122f403d05ee5fb48adfff",
+    "sourceEdition": "GITenberg/A-Child-s-Garden-of-Verses_25608/25608.txt",
+    "verified": true
+  },
+  {
+    "text": "These nuts, that I keep in the back of the nest,\nWhere all my lead soldiers are lying at rest,\nWere gathered in autumn by nursie and me\nIn a wood with a well by the side of the sea.\n\nThis whistle we made (and how clearly it sounds!)\nBy the side of a field at the end of the grounds,\nOf a branch of a plane, with a knife of my own,\nIt was nursie who made it, and nursie alone!\n\nThe stone, with the white and the yellow and gray,\nWe discovered I cannot tell how far away;\nAnd I carried it back, although weary and cold,\nFor though father denies it, I'm sure it is gold.\n\nBut of all my treasures the last is the king,\nFor there's very few children possess such a thing;\nAnd that is a chisel, both handle and blade,\nWhich a man who was really a carpenter made.",
+    "author": "Robert Louis Stevenson",
+    "work": "A Child's Garden of Verses · My Treasures",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/25608",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "d1e669f9991ede5228122f403d05ee5fb48adfff",
+    "sourceEdition": "GITenberg/A-Child-s-Garden-of-Verses_25608/25608.txt",
+    "verified": true
+  },
+  {
+    "text": "The gardener does not love to talk,\nHe makes and keeps the gravel walk;\nAnd when he puts his tools away,\nHe locks the door and takes the key.\n\nAway behind the currant row\nWhere no one else but cook may go,\nFar in the plots, I see him dig,\nOld and serious, brown and big.\n\nHe digs the flowers, green, red, and blue,\nNor wishes to be spoken to.\nHe digs the flowers and cuts the hay,\nAnd never seems to want to play.\n\nSilly gardener! summer goes,\nAnd winter comes with pinching toes,\nWhen in the garden bare and brown\nYou must lay your barrow down.\n\nWell now, and while the summer stays,\nTo profit by these garden days\nO how much wiser you would be\nTo play at Indian wars with me!",
+    "author": "Robert Louis Stevenson",
+    "work": "A Child's Garden of Verses · The Gardener",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/25608",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "d1e669f9991ede5228122f403d05ee5fb48adfff",
+    "sourceEdition": "GITenberg/A-Child-s-Garden-of-Verses_25608/25608.txt",
+    "verified": true
+  },
+  {
+    "text": "You too, my mother, read my rhymes\nFor love of unforgotten times,\nAnd you may chance to hear once more\nThe little feet along the floor.",
+    "author": "Robert Louis Stevenson",
+    "work": "A Child's Garden of Verses · To My Mother",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/25608",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "d1e669f9991ede5228122f403d05ee5fb48adfff",
+    "sourceEdition": "GITenberg/A-Child-s-Garden-of-Verses_25608/25608.txt",
+    "verified": true
+  },
+  {
+    "text": "As from the house your mother sees\nYou playing round the garden trees,\nSo you may see, if you will look\nThrough the windows of this book,\nAnother child, far, far away,\nAnd in another garden, play.\nBut do not think you can at all,\nBy knocking on the window, call\nThat child to hear you. He intent\nIs all on his play-business bent,\nHe does not hear; he will not look.\nNor yet be lured out of this book.\nFor, long ago, the truth to say,\nHe has grown up and gone away,\nAnd it is but a child of air\nThat lingers in the garden there.",
+    "author": "Robert Louis Stevenson",
+    "work": "A Child's Garden of Verses · To Any Reader",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/25608",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "d1e669f9991ede5228122f403d05ee5fb48adfff",
+    "sourceEdition": "GITenberg/A-Child-s-Garden-of-Verses_25608/25608.txt",
+    "verified": true
+  },
+  {
+    "text": "If I can stop one heart from breaking,\nI shall not live in vain;\nIf I can ease one life the aching,\nOr cool one pain,\nOr help one fainting robin\nUnto his nest again,\nI shall not live in vain.",
+    "author": "Emily Dickinson",
+    "work": "Poems, Series One · If I can stop one heart from breaking (early edited edition)",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/2678",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "817dbd17b0d8245d0a4c738dc44155ca0b4ba6b6",
+    "sourceEdition": "GITenberg/Poems-by-Emily-Dickinson-Series-One_2678/2678.txt",
+    "verified": true
+  },
+  {
+    "text": "Our share of night to bear,\nOur share of morning,\nOur blank in bliss to fill,\nOur blank in scorning.\n\nHere a star, and there a star,\nSome lose their way.\nHere a mist, and there a mist,\nAfterwards -- day!",
+    "author": "Emily Dickinson",
+    "work": "Poems, Series One · Our share of night to bear (early edited edition)",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/2678",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "817dbd17b0d8245d0a4c738dc44155ca0b4ba6b6",
+    "sourceEdition": "GITenberg/Poems-by-Emily-Dickinson-Series-One_2678/2678.txt",
+    "verified": true
+  },
+  {
+    "text": "The morns are meeker than they were,\nThe nuts are getting brown;\nThe berry's cheek is plumper,\nThe rose is out of town.\n\nThe maple wears a gayer scarf,\nThe field a scarlet gown.\nLest I should be old-fashioned,\nI'll put a trinket on.",
+    "author": "Emily Dickinson",
+    "work": "Poems, Series One · The morns are meeker than they were (early edited edition)",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/2678",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "817dbd17b0d8245d0a4c738dc44155ca0b4ba6b6",
+    "sourceEdition": "GITenberg/Poems-by-Emily-Dickinson-Series-One_2678/2678.txt",
+    "verified": true
+  },
+  {
+    "text": "The sky is low, the clouds are mean,\nA travelling flake of snow\nAcross a barn or through a rut\nDebates if it will go.\n\nA narrow wind complains all day\nHow some one treated him;\nNature, like us, is sometimes caught\nWithout her diadem.",
+    "author": "Emily Dickinson",
+    "work": "Poems, Series One · The sky is low, the clouds are mean (early edited edition)",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/2678",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "817dbd17b0d8245d0a4c738dc44155ca0b4ba6b6",
+    "sourceEdition": "GITenberg/Poems-by-Emily-Dickinson-Series-One_2678/2678.txt",
+    "verified": true
+  },
+  {
+    "text": "The heart asks pleasure first,\nAnd then, excuse from pain;\nAnd then, those little anodynes\nThat deaden suffering;\n\nAnd then, to go to sleep;\nAnd then, if it should be\nThe will of its Inquisitor,\nThe liberty to die.",
+    "author": "Emily Dickinson",
+    "work": "Poems, Series One · The heart asks pleasure first (early edited edition)",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/2678",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "817dbd17b0d8245d0a4c738dc44155ca0b4ba6b6",
+    "sourceEdition": "GITenberg/Poems-by-Emily-Dickinson-Series-One_2678/2678.txt",
+    "verified": true
+  },
+  {
+    "text": "The pedigree of honey\nDoes not concern the bee;\nA clover, any time, to him\nIs aristocracy.",
+    "author": "Emily Dickinson",
+    "work": "Poems, Series One · The pedigree of honey (early edited edition)",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/2678",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "817dbd17b0d8245d0a4c738dc44155ca0b4ba6b6",
+    "sourceEdition": "GITenberg/Poems-by-Emily-Dickinson-Series-One_2678/2678.txt",
+    "verified": true
+  },
+  {
+    "text": "I never saw a moor,\nI never saw the sea;\nYet know I how the heather looks,\nAnd what a wave must be.\n\nI never spoke with God,\nNor visited in heaven;\nYet certain am I of the spot\nAs if the chart were given.",
+    "author": "Emily Dickinson",
+    "work": "Poems, Series One · I never saw a moor (early edited edition)",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/2678",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "817dbd17b0d8245d0a4c738dc44155ca0b4ba6b6",
+    "sourceEdition": "GITenberg/Poems-by-Emily-Dickinson-Series-One_2678/2678.txt",
+    "verified": true
+  },
+  {
+    "text": "Hope is the thing with feathers\nThat perches in the soul,\nAnd sings the tune without the words,\nAnd never stops at all,\n\nAnd sweetest in the gale is heard;\nAnd sore must be the storm\nThat could abash the little bird\nThat kept so many warm.\n\nI 've heard it in the chillest land,\nAnd on the strangest sea;\nYet, never, in extremity,\nIt asked a crumb of me.",
+    "author": "Emily Dickinson",
+    "work": "Poems, Series Two · Hope is the thing with feathers (early edited edition)",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/2679",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "9c2d5446f32a17043dc183dfda4066b03b7b99a8",
+    "sourceEdition": "GITenberg/Poems-by-Emily-Dickinson-Series-Two_2679/2679.txt",
+    "verified": true
+  },
+  {
+    "text": "A bird came down the walk:\nHe did not know I saw;\nHe bit an angle-worm in halves\nAnd ate the fellow, raw.\n\nAnd then he drank a dew\nFrom a convenient grass,\nAnd then hopped sidewise to the wall\nTo let a beetle pass.\n\nHe glanced with rapid eyes\nThat hurried all abroad, --\nThey looked like frightened beads, I thought;\nHe stirred his velvet head\n\nLike one in danger; cautious,\nI offered him a crumb,\nAnd he unrolled his feathers\nAnd rowed him softer home\n\nThan oars divide the ocean,\nToo silver for a seam,\nOr butterflies, off banks of noon,\nLeap, plashless, as they swim.",
+    "author": "Emily Dickinson",
+    "work": "Poems, Series Two · A bird came down the walk (early edited edition)",
+    "kind": "Poetry",
+    "source": "https://www.gutenberg.org/ebooks/2679",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "9c2d5446f32a17043dc183dfda4066b03b7b99a8",
+    "sourceEdition": "GITenberg/Poems-by-Emily-Dickinson-Series-Two_2679/2679.txt",
     "verified": true
   }
 ];

@@ -98,3 +98,5 @@ Expanded curated Scripture references (checked against pinned WEBU verse invento
 
 ## v0.13 — reading controls and offline fallback
 Stay here pauses the arrival timer; Another passage/reading changes only that selection. Reading size and optional last-30 repeat prevention in Settings. ESV remains default. Optional WEBU offline fallback is explicitly labeled and never silently presented as ESV; packaged build fetches a pinned CC0 dataset, verifies Git blob digest and verse/chapter counts, and bundles it. For development run `npm run prepare:bible`. Study Explore includes optional external scholarly atlas, language, timeline, art and cross-reference links; not locally authored historical explanations.
+
+Additional literary collection: 103 total; 20 wonders. News now labels reported events/data versus forecasts, opinion, marketing or unclear claims, keeping speculative items outside the concrete good/concern sections.

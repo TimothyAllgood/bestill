@@ -93,15 +93,17 @@ function applySelection(items,selection){
   const attention=pick(selection?.attention,3),good=pick(selection?.good,5);
   return {good,attention};
 }
+const evidenceKinds=['reported-event','measured-data','forecast','opinion','promotion','unclear'];
+function evidenceKind(item,row){const t=item.title.toLowerCase();if(/\b(opinion|editorial|commentary|op-ed)\b/.test(t))return 'opinion';if(/\b(predicts?|forecasts?|could|might|may|expects?|projections?|will replace)\b/.test(t))return 'forecast';return evidenceKinds.includes(row?.kind)?row.kind:'unclear';}
 function rankScored(items,rows){
   const byId=new Map(items.map(i=>[i.id,i])),seen=new Set(),ranked=[];
   for(const row of Array.isArray(rows)?rows:[]){
     if(!row||!byId.has(row.id)||seen.has(row.id)||!['positive','negative','neutral','unclear'].includes(row.tone))continue;
     if(![row.relevance,row.impact].every(x=>Number.isInteger(x)&&x>=0&&x<=3))continue;
-    seen.add(row.id);ranked.push({...byId.get(row.id),tone:row.tone,relevance:row.relevance,impact:row.impact,score:row.relevance*2+row.impact});
+    const item=byId.get(row.id),kind=evidenceKind(item,row),uncertain=['forecast','opinion','promotion','unclear'].includes(kind);seen.add(row.id);ranked.push({...item,kind,tone:row.tone,relevance:row.relevance,impact:row.impact,score:row.relevance*2+row.impact-(uncertain?2:0)});
   }
   ranked.sort((a,b)=>b.score-a.score||Date.parse(b.date)-Date.parse(a.date)||a.id.localeCompare(b.id));
-  const good=ranked.filter(x=>x.tone==='positive'&&x.relevance>=1),bad=ranked.filter(x=>x.tone==='negative'),attention=bad.filter(x=>x.relevance>=2&&x.impact>=2),other=ranked.filter(x=>x.tone==='neutral'&&x.relevance>=2);
+  const concrete=x=>['reported-event','measured-data'].includes(x.kind);const good=ranked.filter(x=>x.tone==='positive'&&x.relevance>=1&&concrete(x)),bad=ranked.filter(x=>x.tone==='negative'),attention=bad.filter(x=>x.relevance>=2&&x.impact>=2&&concrete(x)),other=ranked.filter(x=>x.relevance>=2&&(x.tone==='neutral'||!concrete(x)));
   function diverse(list,max){const sources=new Map(),out=[];for(const item of list){const family=item.sourceId.startsWith('bbc-')?'bbc':item.sourceId.startsWith('guard-')?'guardian':item.sourceId.startsWith('axios')?'axios':item.sourceId.startsWith('npr')?'npr':item.sourceId;const n=sources.get(family)||0;if(n>=2)continue;sources.set(family,n+1);out.push(item);if(out.length===max)break;}return out;}
   return {good:diverse(good,5),attention:diverse(attention,3),other:diverse(other,3),ranked,counts:{positive:ranked.filter(x=>x.tone==='positive').length,negative:bad.length,neutral:ranked.filter(x=>x.tone==='neutral').length,unclear:ranked.filter(x=>x.tone==='unclear').length,unclassified:items.length-ranked.length}};
 }
