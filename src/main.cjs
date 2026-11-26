@@ -5,6 +5,7 @@ const smoke=process.argv.includes('--smoke-test');
 if(smoke)app.setPath('userData',require('node:fs').mkdtempSync(path.join(require('node:os').tmpdir(),'bestill-smoke-')));
 const Parser=require('rss-parser');
 const C=require('./core.cjs');
+const {passageParams,formatPassage}=require('./scripture-format.cjs');
 const {catalog,getRecording,validRecording}=require('./recordings.cjs');
 const AudioChoice=require('./audio-choice.js');
 const ReaderPolicy=require('./reader-policy.cjs');
@@ -28,19 +29,19 @@ async function request(url,options={},timeout=10000){
   if(!response.ok)throw new Error('HTTP '+response.status);
   return response;
 }
-async function scripture(ref){
+async function scripture(ref,numbered=false){
   if(!C.allowedPassage(ref)||![ritual.reference,ritual.context,...ritual.related].includes(ref))throw new Error('Unknown passage');
   const link=C.esvLink(ref),key=smoke?'':esvToken||process.env.ESV_API_KEY?.trim();
   approvedLinks.add(link);
+  if(smoke)return {link,...formatPassage([numbered===true?'[1] Offline test fixture.\n[2] Second test line. (ESV)':'Offline test fixture. (ESV)'],numbered===true),notice:''};
   if(!key)return {link,text:null,notice:'Read the ESV at Crossway, or configure your free personal API token in Settings.'};
   try{
     const url=new URL('https://api.esv.org/v3/passage/text/');
-    for(const [k,v] of Object.entries({q:ref,'include-passage-references':'false','include-verse-numbers':'false','include-footnotes':'false','include-headings':'false','include-short-copyright':'true','include-copyright':'false'}))url.searchParams.set(k,v);
+    for(const [k,v] of Object.entries(passageParams(ref,numbered===true)))url.searchParams.set(k,v);
     const data=await (await request(url,{headers:{Authorization:'Token '+key}})).json();
-    const text=Array.isArray(data.passages)?data.passages.join('\n').trim():'';
-    if(!text)return {link,text:null,notice:'Passage unavailable. Open the original at Crossway.'};
-    // Keep the API's original short copyright notice with the passage. Full attribution is in Settings.
-    return {link,text,notice:''};
+    const formatted=formatPassage(data.passages,numbered===true);
+    if(!formatted.text)return {link,text:null,notice:'Passage unavailable. Open the original at Crossway.'};
+    return {link,...formatted,notice:''};
   }catch{return {link,text:null,notice:'ESV could not be loaded. Open the original at Crossway when connected.'};}
 }
 async function models(){
