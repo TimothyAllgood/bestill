@@ -102,7 +102,7 @@ async function buildBriefing(snapshot,job){
 }
 function startBriefing(force=false){
   if(smoke)return {pending:false,stage:'ready',mode:'unclassified',candidateCount:1,unclassified:[{id:'fixture',title:'Offline smoke-test headline',source:'Test fixture',date:new Date().toISOString(),link:'https://example.com/',excerpt:'Test fixture only.'}],coverage:[],alerts:{status:'not configured',items:[]}};
-  const today=C.localDate(),decision:C.newsDecision(config.news&&ritual?.newsAllowed!==false,config.lastBriefing,today,force);
+  const today=C.localDate(),decision=C.newsDecision(config.news&&ritual?.newsAllowed!==false,config.lastBriefing,today,force);
   if(decision!=='fetch'&&!(briefJob&&briefingDate===today&&decision==='already-shown'&&!force))return {skipped:true,reason:decision};
   if(!force&&briefJob&&briefingDate===today)return briefState;
   if(briefJob)briefJob.abort();
