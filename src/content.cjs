@@ -1,4 +1,6 @@
 // Original reflection prompts; Scripture is fetched from Crossway, never generated.
+const {chapters,shortReadings,shortReading,chapterReading}=require('./bible.cjs');
+const {entries:inspirations}=require('./inspiration.cjs');
 const arrivals = [
   'You do not have to carry tomorrow today.',
   'There is time to be still before the day begins.',
@@ -47,7 +49,47 @@ const prayers = [
   "Who is difficult to love right now?",
   "What good thing are you afraid of losing?",
   "Where can you ask for strength to be faithful?",
-  "What could you let go of today?"
+  "What could you let go of today?",
+  "Who in your family needs encouragement that you could ask God to help you give?",
+  "What would you like to thank God for about your child or someone you care for?",
+  "Where do you need to be more present with your loved ones?",
+  "Who is lonely or grieving whom you could remember before God?",
+  "What could you bring before God about your work today?",
+  "Where do you need integrity when no one is watching?",
+  "How could you pray for your coworkers, including the difficult ones?",
+  "What talent could you ask God to help you use in service of others?",
+  "Who has hurt you, and what would you like to bring to God about that hurt?",
+  "Where are you holding resentment that you want help releasing?",
+  "What apology might you need the courage to make?",
+  "Where could you ask God to make you more compassionate?",
+  "What temptation do you want to be honest with God about?",
+  "What habit would you like God to help you change?",
+  "Where do you need wisdom about money and generosity?",
+  "Who lacks something you take for granted?",
+  "What would you like to ask God for on behalf of your community?",
+  "Pray for someone who serves others in a quiet and often unnoticed way.",
+  "What part of your faith would you like to understand more deeply?",
+  "Where could you ask for greater love of Scripture?",
+  "What do you find beautiful about God's character?",
+  "What prayer of thanksgiving have you been putting off?",
+  "Where are you tempted to compare your life with someone else's?",
+  "What disappointment do you want to speak honestly about with God?",
+  "Who needs healing or comfort today?",
+  "Where do you need courage to tell the truth with kindness?",
+  "What does your household need today that you could bring before God?",
+  "Where could you ask for a willingness to serve without being recognized?",
+  "What joy would you like to share with God?",
+  "Which responsibility could you approach with patience rather than hurry?",
+  "Where do you need to listen more carefully before responding?",
+  "Who could you pray for even if you disagree with them?",
+  "What would you like to ask God for the people leading your community?",
+  "Where have you received mercy that you could extend to someone else?",
+  "What part of the day could you intentionally dedicate to God?",
+  "What could you ask God to help you notice in creation today?",
+  "Who has been faithful to you, and how could you thank God for them?",
+  "Where do you need help accepting your limitations?",
+  "What small act of love could you ask for strength to carry out?",
+  "What is something you hope to learn from God today?"
 ];
 const gratitude = [
   'What do you have today that you once hoped for?',
@@ -71,7 +113,19 @@ const gratitude = [
   "What part of your work gives you satisfaction?",
   "What can you learn or make simply because you enjoy it?",
   "What do you appreciate about the people closest to you?",
-  "What is one good thing that requires no purchase?"
+  "What is one good thing that requires no purchase?",
+  "What sound in your home makes you glad to be there?",
+  "What simple pleasure cost you nothing yesterday?",
+  "What is something you can do with your hands that brings you joy?",
+  "What is a kindness you received when you least expected it?",
+  "What season of life taught you something you appreciate now?",
+  "What is one ordinary thing about your family that you would miss?",
+  "What aspect of your community makes you grateful?",
+  "What is something you have learned to do that once seemed difficult?",
+  "What is beautiful about today’s weather, light or surroundings?",
+  "What is a book, song or story you are thankful exists?",
+  "What moment of laughter can you remember?",
+  "What freedom or opportunity are you grateful to have?"
 ];
 const endings = [
   'Love the people in front of you. Do the work before you.',
@@ -89,7 +143,7 @@ const endings = [
 ];
 // Reference, surrounding passage, human-written study URL, suggested related readings.
 // Related readings are editorial suggestions, not an exhaustive cross-reference system.
-const passages = [
+const originalPassages = [
   ['Psalm 46:10','Psalm 46','https://www.bibleref.com/Psalms/46/Psalm-46-10.html',['Psalm 46:1','Exodus 14:14']],
   ['Psalm 56:3','Psalm 56','https://www.bibleref.com/Psalms/56/Psalm-56-3.html',['Psalm 27:1','Psalm 56:4']],
   ['Matthew 6:34','Matthew 6:25-34','https://www.bibleref.com/Matthew/6/Matthew-6-34.html',['Matthew 6:33','Philippians 4:6-7']],
@@ -118,6 +172,8 @@ const passages = [
   ["Hebrews 12:1-2","Hebrews 12:1-3","https://www.bibleref.com/Hebrews/12/Hebrews-12-1.html",["Philippians 3:13-14","2 Timothy 4:7"]],
   ["1 Thessalonians 5:16-18","1 Thessalonians 5:12-24","https://www.bibleref.com/1-Thessalonians/5/1-Thessalonians-5-16.html",["Philippians 4:4-7","Colossians 3:17"]]
 ];
+const originalRefs=new Set(originalPassages.map(p=>p[0]));
+const passages=[...originalPassages,...shortReadings.filter(ref=>!originalRefs.has(ref)).map(shortReading)];
 function choose(items,random) { return items[Math.floor(random()*items.length)]; }
 const reflections={
  'Psalm 46:10':'What does the whole psalm say about God’s presence amid trouble?',
@@ -135,8 +191,8 @@ const reflections={
  'Isaiah 41:10':'Who is being addressed in the surrounding passage, and what does God promise them?',
  '2 Timothy 1:7':'How does the surrounding letter connect courage with faithfulness?'
 };
-function makeRitual(random=Math.random) {
-  const [reference,context,study,related]=choose(passages,random);
-  return {arrival:choose(arrivals,random),prayer:choose(prayers,random),gratitude:choose(gratitude,random),ending:choose(endings,random),reference,context,study,related,reflection:reflections[reference]||'What does this passage reveal about God in its surrounding context?'};
+function makeRitual(random=Math.random,mode='short') {
+  const [reference,context,study,related]=mode==='chapter'?chapterReading(choose(chapters,random)):choose(passages,random);
+  return {arrival:choose(arrivals,random),prayer:choose(prayers,random),gratitude:choose(gratitude,random),ending:choose(endings,random),inspiration:choose(inspirations,random),reference,context,study,related,reflection:reflections[reference]||'What does this passage reveal about God in its surrounding context?'};
 }
-module.exports={makeRitual,passages};
+module.exports={makeRitual,passages,originalPassages,prayers,gratitude};

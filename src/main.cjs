@@ -25,7 +25,7 @@ async function request(url,options={},timeout=10000){
   return response;
 }
 async function scripture(ref){
-  if(!C.allowedPassage(ref))throw new Error('Unknown passage');
+  if(!C.allowedPassage(ref)||![ritual.reference,ritual.context,...ritual.related].includes(ref))throw new Error('Unknown passage');
   const link=C.esvLink(ref),key=smoke?'':esvToken||process.env.ESV_API_KEY?.trim();
   approvedLinks.add(link);
   if(!key)return {link,text:null,notice:'Read the ESV at Crossway, or configure your free personal API token in Settings.'};
@@ -117,7 +117,7 @@ function bind(channel,handler){ipcMain.handle(channel,(event,...args)=>{
 function getBriefing(force=false){return startBriefing(force===true);}
 function newsPreferences(c){return JSON.stringify([c.news,c.ai,c.model,c.region,c.feeds]);}
 function register(){
-  bind('session',()=>{void getBriefing();return {ritual:{...ritual,resources:resources(ritual.reference)},config:{...config,track:!!config.track,hasEsvKey:!!(esvToken||process.env.ESV_API_KEY)},today:C.localDate(),feeds:C.FEEDS};});
+  bind('session',()=>{void getBriefing();return {ritual:{...ritual,resources:resources(ritual.reference),hasCommentary:!!commentary(ritual.reference)},config:{...config,track:!!config.track,hasEsvKey:!!(esvToken||process.env.ESV_API_KEY)},today:C.localDate(),feeds:C.FEEDS};});
   bind('scripture',scripture);
   bind('commentary',ref=>ref===ritual.reference?commentary(ref):null);
   bind('esv-key',saveToken);
@@ -144,9 +144,9 @@ function register(){
   bind('finish',()=>win?.close());
 }
 function createWindow(){
-  ritual=C.makeRitual();resetBriefing();
+  ritual=C.makeRitual(Math.random,config.readingMode);resetBriefing();
   const links=resources(ritual.reference);
-  approvedLinks=new Set([links.video?.url,links.net,links.tgc,links.bibleProject,commentary(ritual.reference)?.source,ritual.study,C.esvLink(ritual.reference),C.esvLink(ritual.context),...ritual.related.map(C.esvLink),'https://www.weather.gov/','https://api.esv.org/']);
+  approvedLinks=new Set([...links.videos.map(v=>v.url),links.passageVideo?.url,links.collection,ritual.inspiration?.source,links.net,links.tgc,links.bibleProject,commentary(ritual.reference)?.source,ritual.study,C.esvLink(ritual.reference),C.esvLink(ritual.context),...ritual.related.map(C.esvLink),'https://www.weather.gov/','https://api.esv.org/']);
   win=new BrowserWindow({title:'Be Still',fullscreen:smoke||config.fullscreen,width:1100,height:760,minWidth:420,minHeight:550,backgroundColor:'#111310',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true}});
   win.webContents.on('before-input-event',(event,input)=>{if(input.type==='keyDown'&&!input.isAutoRepeat&&(input.key==='F11'||(input.key==='Escape'&&win.isFullScreen()))){event.preventDefault();win.setFullScreen(input.key==='F11'?!win.isFullScreen():false);}});
   win.webContents.setWindowOpenHandler(()=>({action:'deny'}));
