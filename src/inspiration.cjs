@@ -1,4 +1,4 @@
-// Historical literary excerpts. Added texts checked against source transcriptions, with whitespace normalized for reading.
+// Historical literary excerpts; new additions checked against source editions. Never generated at runtime.
 const entries=[
   {
     "text": "Our life is frittered away by detail.",
@@ -631,6 +631,105 @@ const entries=[
     "license": "Public-domain historical text (US)",
     "sourceBlob": "a92be8ba5b3511a003a22ba31523c14397aaa83a",
     "sourceEdition": "GITenberg/Essays---First-Series_2944/2944.txt",
+    "verified": true
+  },
+  {
+    "text": "We ought not weary of doing little things for the love of God, who regards not the greatness of the work, but the love with which it is performed.",
+    "author": "Brother Lawrence",
+    "work": "The Practice of the Presence of God · historical translation",
+    "source": "https://www.gutenberg.org/ebooks/5657",
+    "kind": "Christian reflection",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "19780e14b94f8302cc91f442ba4651c1d921bbce",
+    "sourceEdition": "GITenberg/The-Practice-of-the-Presence-of-God_5657/5657.txt",
+    "verified": true
+  },
+  {
+    "text": "The whole substance of religion was faith, hope, and charity.",
+    "author": "Brother Lawrence",
+    "work": "The Practice of the Presence of God · historical translation",
+    "source": "https://www.gutenberg.org/ebooks/5657",
+    "kind": "Christian reflection",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "19780e14b94f8302cc91f442ba4651c1d921bbce",
+    "sourceEdition": "GITenberg/The-Practice-of-the-Presence-of-God_5657/5657.txt",
+    "verified": true
+  },
+  {
+    "text": "There is not in the world a kind of life more sweet and delightful than that of a continual conversation with God.",
+    "author": "Brother Lawrence",
+    "work": "The Practice of the Presence of God · historical translation",
+    "source": "https://www.gutenberg.org/ebooks/5657",
+    "kind": "Christian reflection",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "19780e14b94f8302cc91f442ba4651c1d921bbce",
+    "sourceEdition": "GITenberg/The-Practice-of-the-Presence-of-God_5657/5657.txt",
+    "verified": true
+  },
+  {
+    "text": "The time of business,\" said he, \"does not with me differ from the time of prayer.",
+    "author": "Brother Lawrence",
+    "work": "The Practice of the Presence of God · historical translation",
+    "source": "https://www.gutenberg.org/ebooks/5657",
+    "kind": "Christian reflection",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "19780e14b94f8302cc91f442ba4651c1d921bbce",
+    "sourceEdition": "GITenberg/The-Practice-of-the-Presence-of-God_5657/5657.txt",
+    "verified": true
+  },
+  {
+    "text": "The test of all happiness is gratitude; and I felt grateful, though I hardly knew to whom.",
+    "author": "G. K. Chesterton",
+    "work": "Orthodoxy (1908)",
+    "source": "https://www.gutenberg.org/ebooks/130",
+    "kind": "Christian reflection",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "ea796135b5987e7d15131cdcbf9567801c0c34c2",
+    "sourceEdition": "GITenberg/Orthodoxy_130/130.txt",
+    "verified": true
+  },
+  {
+    "text": "Angels can fly because they can take themselves lightly.",
+    "author": "G. K. Chesterton",
+    "work": "Orthodoxy (1908)",
+    "source": "https://www.gutenberg.org/ebooks/130",
+    "kind": "Christian reflection",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "ea796135b5987e7d15131cdcbf9567801c0c34c2",
+    "sourceEdition": "GITenberg/Orthodoxy_130/130.txt",
+    "verified": true
+  },
+  {
+    "text": "A child kicks his legs rhythmically through excess, not absence, of life.",
+    "author": "G. K. Chesterton",
+    "work": "Orthodoxy (1908)",
+    "source": "https://www.gutenberg.org/ebooks/130",
+    "kind": "Christian reflection",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "ea796135b5987e7d15131cdcbf9567801c0c34c2",
+    "sourceEdition": "GITenberg/Orthodoxy_130/130.txt",
+    "verified": true
+  },
+  {
+    "text": "He that is down needs fear no fall\nHe that is low, no pride;\nHe that is humble ever shall\nHave God to be his guide.",
+    "author": "John Bunyan",
+    "work": "The Pilgrim’s Progress · Part II",
+    "source": "https://www.gutenberg.org/ebooks/39452",
+    "kind": "Christian reflection",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "6e101c8f6288a5713122085f0afe96485840fa5a",
+    "sourceEdition": "GITenberg/The-Pilgrim-s-Progress-by-John-Bunyan_39452/39452.txt",
+    "verified": true
+  },
+  {
+    "text": "A man there was, though some did count him mad,\nThe more he cast away, the more he had.",
+    "author": "John Bunyan",
+    "work": "The Pilgrim’s Progress · Part II",
+    "source": "https://www.gutenberg.org/ebooks/39452",
+    "kind": "Christian reflection",
+    "license": "Public-domain historical text (US)",
+    "sourceBlob": "6e101c8f6288a5713122085f0afe96485840fa5a",
+    "sourceEdition": "GITenberg/The-Pilgrim-s-Progress-by-John-Bunyan_39452/39452.txt",
     "verified": true
   }
 ];
